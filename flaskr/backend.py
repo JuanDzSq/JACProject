@@ -5,14 +5,6 @@ import hashlib
 import io
 from flask import send_file
 
-
-
-class PageNotFoundError(Exception):
-    pass
-
-class ImageNotFoundError(Exception):
-    pass
-
 class Backend:
 
     def __init__(self):
@@ -23,7 +15,8 @@ class Backend:
         self.user_bucket = self.storage_client.bucket(self.user_bucket_name)
         
     def get_wiki_page(self, name):
-        """Fetches the contents of the specified wiki page.
+        """
+        Fetches the contents of the specified wiki page.
 
         Args:
         page_name: A string representing the name of the wiki page to retrieve.
@@ -37,7 +30,7 @@ class Backend:
         page_name = name
         blob = self.content_bucket.blob(page_name)
         if not blob.exists():
-            raise PageNotFoundError(f"The file {page_name} does not exist.")
+            return f"Error: The file {page_name} does not exist."
         contents = blob.download_as_text()
         return contents
 
@@ -66,7 +59,7 @@ class Backend:
         """
         
         blob = self.content_bucket.blob(file_name)
-        blob.upload_from_file(file_content.stream)
+        blob.upload_from_file(file_content)
 
     def sign_up(self, username, password):
         """
@@ -79,14 +72,13 @@ class Backend:
         Returns:
             bool: True if the user is created successfully, False if the user already exists.
         """
-        
         prefixed_password = "teamjacwillmakeit" + password
+        hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
+        user_data = f"{username}:{hashed_password}"
         blob = self.user_bucket.blob(username)
         if blob.exists():
             return False
-        hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
-        data = {"username": username, "password": hashed_password}
-        blob.upload_from_string(str(data))
+        blob.upload_from_string(user_data)
         return True
 
     def sign_in(self, username, password):
@@ -100,14 +92,12 @@ class Backend:
         Returns:
         True if login is successful, False otherwise.
         """
-
         blob = self.user_bucket.blob(username)
         if not blob.exists():
             return False
         user_data = blob.download_as_text()
 
-        stored_credentials = user_data.split(':')
-        stored_hashed_password = stored_credentials[-1]
+        stored_username, stored_hashed_password = user_data.split(':')
         prefixed_password = "teamjacwillmakeit" + password
         hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
 
@@ -124,14 +114,11 @@ class Backend:
         Args:
             image_name (str): The name of the image file to retrieve.
 
-        Raises:
-            ImageNotFoundError: If the specified image does not exist in the user bucket.
-
         Returns:
-            A Flask response object containing the requested image.
+            A bytes object containing the requested image.
         """
         blob = self.user_bucket.blob(image_name)
         if not blob.exists():
-            raise ImageNotFoundError(f"The image {image_name} does not exist in the bucket.")
-        img_stream = blob.download_as_bytes()
-        return send_file(io.BytesIO(img_stream), mimetype='image/jpeg')
+            return f"The image {image_name} does not exist in the bucket."
+        img_data = blob.download_as_bytes()
+        return img_data
