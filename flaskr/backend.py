@@ -6,6 +6,7 @@ import io
 from flask import send_file
 
 class Backend:
+    PASSWORD_PREFIX = "teamjacwillmakeit"
 
     def __init__(self):
         self.content_bucket_name = "teamjac-wiki_content"
@@ -43,7 +44,8 @@ class Backend:
         """
 
         page_names = []
-        blobs = self.content_bucket.list_blobs(prefix='Pages/')
+        blobs = self.content_bucket.list_blobs(prefix = "")
+        # blobs = self.content_bucket.list_blobs(prefix='Pages/')
         for blob in blobs:
             if blob.name.endswith('.html'):
                 page_names.append(blob.name.split('/')[-1])
@@ -57,7 +59,6 @@ class Backend:
         file_content: A file object containing the contents to be uploaded.
         file_name: The name to be given to the uploaded file.
         """
-        
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(file_content)
 
@@ -72,7 +73,7 @@ class Backend:
         Returns:
             bool: True if the user is created successfully, False if the user already exists.
         """
-        prefixed_password = "teamjacwillmakeit" + password
+        prefixed_password = self.PASSWORD_PREFIX  + password
         hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
         user_data = f"{username}:{hashed_password}"
         blob = self.user_bucket.blob(username)
@@ -97,10 +98,9 @@ class Backend:
             return False
         user_data = blob.download_as_text()
 
-        stored_username, stored_hashed_password = user_data.split(':')
-        prefixed_password = "teamjacwillmakeit" + password
+        stored_hashed_password = user_data.split(':')[1]   
+        prefixed_password = self.PASSWORD_PREFIX + password
         hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
-
         if hashed_password == stored_hashed_password:
             return True
         else:
@@ -117,8 +117,14 @@ class Backend:
         Returns:
             A bytes object containing the requested image.
         """
-        blob = self.user_bucket.blob(image_name)
+        blob = self.content_bucket.blob(image_name)
         if not blob.exists():
             return f"The image {image_name} does not exist in the bucket."
         img_data = blob.download_as_bytes()
         return img_data
+
+backend = Backend()
+
+text_content = open("abhishek.txt")
+backend.upload(text_content, "abhishek.txt")
+
