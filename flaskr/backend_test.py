@@ -6,7 +6,6 @@ import pytest
 import hashlib
 from unittest.mock import Mock
 import io
-from flask import send_file
 
 @pytest.fixture
 def backend():
@@ -22,11 +21,12 @@ def test_get_wiki_page(backend):
     """
     Test that the `get_wiki_page` method retrieves the correct content for an existing page.
     """
-    page_name = "TeamJacHomePage"
+    mock_page_name = "TeamJacHomePage"
     mock_page_content = "This is TeamJAC"
-    page_blob = backend.content_bucket.blob(page_name)
+    # mock_blob = Mock()
+    page_blob = backend.content_bucket.blob(mock_page_name)
     page_blob.upload_from_string(mock_page_content)
-    retrieved_content = backend.get_wiki_page(page_name)
+    retrieved_content = backend.get_wiki_page(mock_page_name)
     assert retrieved_content == page_blob.download_as_text()
 
 def test_get_wiki_page_when_page_doesnot_exists(backend):
@@ -112,7 +112,7 @@ def test_sign_in_user_exists(backend):
     
     mock_blob = Mock()
     mock_blob.download_as_text.return_value = user_data
-    # mock_blob.download_as_string.return_value = user_data
+
     mock_bucket = Mock()
     mock_bucket.blob.return_value = mock_blob
     backend.user_bucket = mock_bucket
@@ -156,17 +156,15 @@ def test_sign_in_incorrect_password(backend):
 
 def test_get_image(backend):
     """
-    This unit test checks if the get_image method in the backend module correctly retrieves and returns the expected image from the content bucket.
+    This unit test checks if the get_image method in the backend module correctly retrieves and returns the expected image bytes from the content bucket.
     """
     image_name = "test_image.jpg"
     mock_blob = Mock()
     mock_blob.exists.return_value = True
 
     mock_image_data = b"Mock image data"
-    mock_image_stream = io.BytesIO(mock_image_data)
-    mock_blob.download_as_bytes.return_value = mock_image_stream.getvalue()
-
-    backend.user_bucket.blob = Mock(return_value=mock_blob)
+    mock_blob.download_as_bytes.return_value = mock_image_data
+    backend.content_bucket.blob = Mock(return_value=mock_blob)
     result = backend.get_image(image_name)
     assert isinstance(result, bytes)
     assert result == mock_image_data
@@ -181,8 +179,7 @@ def test_get_image_non_existent(backend):
     mock_blob = Mock()
     mock_blob.exists.return_value = False
 
-    backend.user_bucket.blob = Mock(return_value=mock_blob)
+    backend.content_bucket.blob = Mock(return_value=mock_blob)
     result = backend.get_image(image_name)
-
     assert isinstance(result, str)
     assert result == f"The image {image_name} does not exist in the bucket."
