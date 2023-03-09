@@ -122,9 +122,3 @@ class Backend:
             return f"The image {image_name} does not exist in the bucket."
         img_data = blob.download_as_bytes()
         return img_data
-
-backend = Backend()
-
-text_content = open("abhishek.txt")
-backend.upload(text_content, "abhishek.txt")
-
