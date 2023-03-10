@@ -135,7 +135,7 @@ def make_endpoints(app):
 
         backend = Backend()
         message = ''
-        allowed_types = set(['.md', '.html', '.txt', '.png', '.jpg', '.jpeg']) 
+        allowed_types = set(['.html', '.png', '.jpg', '.jpeg']) 
         if request.method == 'POST':
             if 'file' not in request.files:
                 message = 'File did not input'
@@ -149,6 +149,6 @@ def make_endpoints(app):
                 message = 'Upload succesfull'
                 backend.upload(f, f.filename)
             else:
-                message = 'Only submit file types that are md, html, txt, png, jpg, jpeg'
+                message = 'Only submit file types that are html, png, jpg, jpeg'
 
         return render_template('upload.html', message=message)
