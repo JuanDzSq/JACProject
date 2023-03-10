@@ -22,9 +22,6 @@ class Backend:
         Args:
         page_name: A string representing the name of the wiki page to retrieve.
 
-        Raises:
-        PageNotFoundError: If the specified page does not exist in the content bucket.
-
         Returns:
         The text content of the wiki page, as a string.
         """
@@ -42,10 +39,8 @@ class Backend:
         Returns:
         A list of strings representing the names of all wiki pages in the content bucket.
         """
-
         page_names = []
         blobs = self.content_bucket.list_blobs(prefix = "")
-        # blobs = self.content_bucket.list_blobs(prefix='Pages/')
         for blob in blobs:
             if blob.name.endswith('.html'):
                 page_names.append(blob.name.split('/')[-1])
