@@ -1,6 +1,10 @@
 from flaskr import create_app
-
 import pytest
+
+# Install with: pip install 'moto[ec2,s3,all]'
+import boto3
+import moto
+from botocore.exceptions import ClientError
 
 # See https://flask.palletsprojects.com/en/2.2.x/testing/ 
 # for more info on testing
@@ -15,11 +19,46 @@ def app():
 def client(app):
     return app.test_client()
 
+# From: https://stackoverflow.com/questions/71765091/unit-testing-by-mocking-s3-bucket
+@pytest.fixture
+def empty_bucket():
+    """Fixture that creates a fake bucket for testing."""
+    moto_fake = moto.mock_s3()
+    try:
+        moto_fake.start()
+        conn = boto3.resource('s3')
+        conn.create_bucket(Bucket="teamjac-users-passwords")
+        yield conn
+    finally:
+        moto_fake.stop()
+
+"""
 # TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
 # match the changes made in the other Checkpoint Requirements.
 def test_home_page(client):
     resp = client.get("/")
     assert resp.status_code == 200
     assert b"Hello, World!\n" in resp.data
+"""
 
-# TODO(Project 1): Write tests for other routes.
+def test_request_sign_up(client):
+    response = client.get("/sign_up")
+    assert b"<title>User Sign Up</title>" in response.data
+
+def test_request_login(client):
+    response = client.get("/login")
+    assert b"<title>User Login</title>" in response.data
+
+def test_request_logout(client):
+    """Checks if logout redirects to the home page"""
+    response = client.get("/logout", follow_redirects=True)
+    expected = client.get("/")
+    assert len(response.history) == 1
+    assert response.data == expected.data
+
+def test_sign_up_failed(client):
+    data_dict = {'username': 'Juan Diaz', 'password': 'testing'}
+    response = client.post("/sign_up", data=data_dict)
+
+
+    
