@@ -60,27 +60,5 @@ def test_sign_up_failed(client):
     data_dict = {'username': 'Juan Diaz', 'password': 'testing'}
     response = client.post("/sign_up", data=data_dict)
 
-"""
-Testing if the page will be accessed
-"""
-def test_working_get_pages():
-    test_page = {'name_page': 'Survival.html'}
-    assert b"<title>Survival<title>" in test_page
-    
-"""
-Testing if the navigation bar will access a link
-"""
-def test_working_nav_bar(self):
-    response = self.nav_bar.get('/', follow_redirects=True )
-    self.assertEqual(response.status_code)
-
-"""
-Testing if authors images show
-"""
-def test_working_about(self):
-    author = {'Christin': 'Christin.jpeg'}
-    response = self.post("/about", data = author)
-    self.assertEqual(response.status_code)
-
 
     

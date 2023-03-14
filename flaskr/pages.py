@@ -1,9 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session
 from flaskr.backend import Backend
 from fileinput import filename
-import base64
 import pathlib
-import io
+from flask import Flask, render_template, request, redirect, url_for, session
 
 """Contains all of the routes for the pages of our wiki, along with their implementation."""
 
@@ -13,73 +11,7 @@ def make_endpoints(app):
     # go to a specific route on the project's website.
     @app.route("/")
     def home():
-        # TODO(Checkpoint Requirement 2 of 3): Change this to use render_template
-        # to render main.html on the home page.
-
-        #greeting = "Welcome to Team JAC's Wiki!!"
         return render_template("main.html")
-
-    # TODO(Project 1): Implement additional routes according to the project requirements.
-    """
-    The navigation route will determine if the session is true meaning that the user is logged in and will
-    return the username to the html if in use, else it would just return the html
-
-    session: The user is logged in or not logged in, depending the username will be returned
-
-    """
-    @app.route("/nav_bar")
-    def nav_bar():
-        #backend = Backend()
-        if username in session:
-            #return f'{session["username"]}'  
-            #username = f'{session["username"]}'
-            username = session['username']
-            return render_template("navigation_bar.html", username = username)     
-
-        return render_template("navigation_bar.html")
-    """
-    The page list will be created with the page names retrieved from the backend. Then the list will be returned 
-    to the pages.html and the links will be accessible there
-
-    backend: get_all_page_names will be accessed and all exisiting pages will be in a list
-    """
-    @app.route("/pages")
-    def pages():
-        backend = Backend()
-        page_list = backend.get_all_page_names
-        return render_template("pages.html", page_list = page_list)
-    """
-    In the route get_pages, the user will be searching for a given page name, 
-    depending on the page, the string retrieved from the backend will be implemented into 
-    the template.html created, meaning that the page the user also creates will have its 
-    own html page.
-
-    backend: get_wiki_page will access each page and return the string of the contents of the pages 
-    """
-    @app.route("/pages/<name>")
-    def get_pages(name):
-        backend = Backend()
-        name_page = name + ".html"
-        content_str = backend.get_wiki_page(name_page)
-        return render_template("template_page.html",content_str = content_str)
-
-    """
-    The about route will retrieve the images from the given authors and retrieve it through the backend. 
-    Since the images are returned as bytes, they will be converted into jpegs so they can me shown in the 
-    about.html page. 
-
-    backend: get_image will get the images of the authors and return the bytes of the images
-    """
-    @app.route("/about", methods = ["GET"])
-    def about():
-        authors = {"Abhishek Khanal": "Abhishek.jpg", "Juan": "Juan.jpeg", "Christin": "Christin.jpeg"}
-        for author in authors:
-            backend = Backend()
-            image_bytes = backend.get_image(authors[author])
-            authors[author] = f"data:image/jpeg;base64,{base64.b64encode(image_bytes).decode('utf-8')}"
-
-        return render_template("about.html", authors = authors)
-    
 
     @app.route("/sign_up", methods =['GET', 'POST'])
     def sign_up():
