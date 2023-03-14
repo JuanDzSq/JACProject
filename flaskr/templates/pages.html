@@ -1,0 +1,22 @@
+{% extends 'navigation_bar.html'}
+
+{% block navigation %}
+
+{% endblock %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <head>
+        <title> Pages contained in the Team JAC Wiki! </title>
+    </head>
+</head>
+
+<body>
+    <!-- TODO(Project 1): Implement routes. -->
+   {% for page_name in page_list %}
+   <a href= {{ url_for ('pages', name = page_name )}}>{{ page_name }}</a>
+   {% endfor %}
+</body>
+
+</html>
