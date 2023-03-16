@@ -1,8 +1,5 @@
-{% extends 'navigation_bar.html'}
-
-{% block navigation %}
-
-{% endblock %}
+{% extends 'navigation_bar.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html>
 
@@ -13,10 +10,10 @@
 </head>
 
 <body>
-    <!-- TODO(Project 1): Implement routes. -->
    {% for page_name in page_list %}
-   <a href= {{ url_for ('pages', name = page_name )}}>{{ page_name }}</a>
+   <a href= {{ url_for('get_pages', name = page_name) }}>{{ page_name }}</a>
    {% endfor %}
 </body>
 
 </html>
+{% endblock %}

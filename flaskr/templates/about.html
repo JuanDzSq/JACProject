@@ -1,14 +1,4 @@
-{% extends 'navigation_bar.html'}
-{% extends "main.html" %}
-
-{% block navigation %}
-
-{% endblock %}
-
-{% block page_name %}
-About This Wiki
-{% endblock %}
-
+{% extends 'navigation_bar.html' %}
 {% block content %}
 <h3>About this Wiki</h3>
 
@@ -27,10 +17,13 @@ About This Wiki
 
 <!-- TODO(Project 1): Add team members and pictures to about page. -->
 <body>
-    {% for author_img in authors %}
-    {{ author_img }}
-    {% endfor %}
+    <ul>
+        {% for author_name in authors %}
+            <li>
+                <p> {{author_name}} </p>
+                <div> <img style="width: 400px; height: auto;" src={{authors[author_name]}}> </div>
+            </li>
+        {% endfor %}
+    </ul>
 </body>
-
 {% endblock %}
-

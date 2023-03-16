@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from markupsafe import Markup
 from flaskr.backend import Backend
 from fileinput import filename
 import base64
@@ -46,7 +47,7 @@ def make_endpoints(app):
     @app.route("/pages")
     def pages():
         backend = Backend()
-        page_list = backend.get_all_page_names
+        page_list = backend.get_all_page_names()
         return render_template("pages.html", page_list = page_list)
     """
     In the route get_pages, the user will be searching for a given page name, 
@@ -59,8 +60,7 @@ def make_endpoints(app):
     @app.route("/pages/<name>")
     def get_pages(name):
         backend = Backend()
-        name_page = name + ".html"
-        content_str = backend.get_wiki_page(name_page)
+        content_str = Markup(backend.get_wiki_page(name))
         return render_template("template_page.html",content_str = content_str)
 
     """
