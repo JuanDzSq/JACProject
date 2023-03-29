@@ -10,7 +10,7 @@ Lint:
 unittest:
  stage: test
  script:
- - pip install yapf
- - pytest
+ - pip install -r requirements.txt
+ - pytest .
  only:
  - pushes
