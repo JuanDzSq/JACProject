@@ -3,6 +3,6 @@ Lint:
  stage: test
  script:
  - pip install yapf
- - yapf --recursive .
+ - yapf --style google --recursive .
  only:
  - pushes
