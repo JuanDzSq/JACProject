@@ -1,0 +1,16 @@
+image: python:3
+Lint:
+ stage: test
+ script:
+ - pip install yapf
+ - yapf --recursive .
+ only:
+ - pushes
+
+unittest:
+ stage: test
+ script:
+ - pip install -r requirements.txt
+ - pytest .
+ only:
+ - pushes
