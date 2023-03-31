@@ -54,24 +54,17 @@ def test_sign_up_failed(client):
 """
 Testing if the page will be accessed
 """
-def test_working_get_pages():
-    test_page = {'name_page': 'Survival.html'}
-    assert b"<title>Survival<title>" in test_page
-    
-"""
-Testing if the navigation bar will access a link
-"""
-def test_working_nav_bar(self):
-    response = self.nav_bar.get('/', follow_redirects=True )
-    self.assertEqual(response.status_code)
+def test_working_get_pages(client):
+    response = client.get("/pages")
+    assert b"<title> Pages contained in the Team JAC Wiki! </title>" in response.data
 
 """
 Testing if authors images show
 """
-def test_working_about(self):
+def test_working_about(client):
     author = {'Christin': 'Christin.jpeg'}
-    response = self.post("/about", data = author)
-    self.assertEqual(response.status_code)
+    response = client.get("/about", data = author)
+    assert b"<h3>About this Wiki</h3>" in response.data
 
 
     
