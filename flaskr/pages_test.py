@@ -32,15 +32,6 @@ def empty_bucket():
     finally:
         moto_fake.stop()
 
-"""
-# TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
-# match the changes made in the other Checkpoint Requirements.
-def test_home_page(client):
-    resp = client.get("/")
-    assert resp.status_code == 200
-    assert b"Hello, World!\n" in resp.data
-"""
-
 def test_request_sign_up(client):
     response = client.get("/sign_up")
     assert b"<title>User Sign Up</title>" in response.data

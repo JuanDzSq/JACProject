@@ -35,7 +35,7 @@ def make_endpoints(app):
             #return f'{session["username"]}'  
             #username = f'{session["username"]}'
             username = session['username']
-            return render_template("navigation_bar.html", username = username)     
+            return render_template("navigation_bar.html", username = username)
 
         return render_template("navigation_bar.html")
     """
