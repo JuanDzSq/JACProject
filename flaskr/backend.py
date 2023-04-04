@@ -5,6 +5,7 @@ import hashlib
 import io
 from flask import send_file
 
+
 class Backend:
     PASSWORD_PREFIX = "teamjacwillmakeit"
 
@@ -12,9 +13,10 @@ class Backend:
         self.content_bucket_name = "teamjac-wiki_content"
         self.user_bucket_name = "teamjac-users-passwords"
         self.storage_client = storage.Client()
-        self.content_bucket = self.storage_client.bucket(self.content_bucket_name)
+        self.content_bucket = self.storage_client.bucket(
+            self.content_bucket_name)
         self.user_bucket = self.storage_client.bucket(self.user_bucket_name)
-        
+
     def get_wiki_page(self, name):
         """
         Fetches the contents of the specified wiki page.
@@ -40,7 +42,7 @@ class Backend:
         A list of strings representing the names of all wiki pages in the content bucket.
         """
         page_names = []
-        blobs = self.content_bucket.list_blobs(prefix = "")
+        blobs = self.content_bucket.list_blobs(prefix="")
         for blob in blobs:
             if blob.name.endswith('.html'):
                 page_names.append(blob.name.split('/')[-1])
@@ -68,7 +70,7 @@ class Backend:
         Returns:
             bool: True if the user is created successfully, False if the user already exists.
         """
-        prefixed_password = self.PASSWORD_PREFIX  + password
+        prefixed_password = self.PASSWORD_PREFIX + password
         hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
         user_data = f"{username}:{hashed_password}"
         blob = self.user_bucket.blob(username)
@@ -93,14 +95,13 @@ class Backend:
             return False
         user_data = blob.download_as_text()
 
-        stored_hashed_password = user_data.split(':')[1]   
+        stored_hashed_password = user_data.split(':')[1]
         prefixed_password = self.PASSWORD_PREFIX + password
         hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
         if hashed_password == stored_hashed_password:
             return True
         else:
             return False
-
 
     def get_image(self, image_name):
         """
