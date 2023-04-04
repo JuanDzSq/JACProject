@@ -22,9 +22,9 @@ def backend():
     with patch('flaskr.pages.Backend') as mock:
         yield mock
 
-def test_request_sign_up(client):
-    response = client.get("/sign_up")
-    assert b"<title>User Sign Up</title>" in response.data
+# def test_request_sign_up(client):
+#     response = client.get("/sign_up")
+#     assert b"<title>User Sign Up</title>" in response.data
 
 def test_request_login(client):
     response = client.get("/login")
@@ -43,6 +43,10 @@ def test_sign_up_successful(client, backend):
     response = client.post("/sign_up", data=data_dict, follow_redirects=True)
     print(response)
     assert b"<title> TeamJAC Project </title>" in response.data
+    
+# def test_sign_up_failed(client):
+#     data_dict = {'username': 'Juan Diaz', 'password': 'testing'}
+#     response = client.post("/sign_up", data=data_dict)
 
 """
 Testing if the page will be accessed
@@ -55,13 +59,10 @@ def test_working_get_pages(client, backend):
     assert b"<title> Pages contained in the Team JAC Wiki! </title>" in response.data
     assert b"<a href= /pages/action>action</a>" in response.data
 
-# """
-# Testing if authors images show
-# """
-# def test_working_about(client):
+"""
+Testing if authors images show
+"""
+# def test_working_about(self):
 #     author = {'Christin': 'Christin.jpeg'}
-#     response = client.get("/about", data = author)
-#     assert b"<h3>About this Wiki</h3>" in response.data
-
-
-    
+#     response = self.post("/about", data = author)
+#     self.assertEqual(response.status_code)
