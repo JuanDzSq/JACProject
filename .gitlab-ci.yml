@@ -1,19 +1,19 @@
 image: python:3
-Lint:
+lint:
  stage: test
  script:
- - pip install yapf
- - yapf --recursive .
+  - pip install yapf==0.32.0
+  - yapf --style google --recursive --diff .
  only:
- - merge_requests
+  - merge_requests
 
 unittest:
  stage: test
  script:
- - pip install -r requirements.txt
- - pytest .
+  - pip install -r requirements.txt
+  - pytest .
  only:
- - merge_requests
+  - merge_requests
 
 prod:
  image: google/cloud-sdk:alpine
@@ -24,4 +24,4 @@ prod:
  script:
  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
- - gcloud app deploy --quiet --project teamjac-378021
+ - gcloud --quiet --project $PROJECT_ID app deploy
