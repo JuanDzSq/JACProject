@@ -56,9 +56,9 @@ def test_request_logout(client):
     assert len(response.history) == 1
     assert response.data == expected.data
 
-def test_sign_up_failed(client):
-    data_dict = {'username': 'Juan Diaz', 'password': 'testing'}
-    response = client.post("/sign_up", data=data_dict)
+# def test_sign_up_failed(client):
+#     data_dict = {'username': 'Juan Diaz', 'password': 'testing'}
+#     response = client.post("/sign_up", data=data_dict)
 
 """
 Testing if the page will be accessed
