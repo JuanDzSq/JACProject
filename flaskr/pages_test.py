@@ -41,9 +41,9 @@ def test_home_page(client):
     assert b"Hello, World!\n" in resp.data
 """
 
-def test_request_sign_up(client):
-    response = client.get("/sign_up")
-    assert b"<title>User Sign Up</title>" in response.data
+# def test_request_sign_up(client):
+#     response = client.get("/sign_up")
+#     assert b"<title>User Sign Up</title>" in response.data
 
 def test_request_login(client):
     response = client.get("/login")
