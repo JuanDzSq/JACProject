@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from markupsafe import Markup
 from flaskr.backend import Backend
 from fileinput import filename
 import base64
 import pathlib
 import io
-
 """Contains all of the routes for the pages of our wiki, along with their implementation."""
+
 
 def make_endpoints(app):
 
@@ -27,27 +28,31 @@ def make_endpoints(app):
     session: The user is logged in or not logged in, depending the username will be returned
 
     """
+
     @app.route("/nav_bar")
     def nav_bar():
         #backend = Backend()
         if username in session:
-            #return f'{session["username"]}'  
+            #return f'{session["username"]}'
             #username = f'{session["username"]}'
             username = session['username']
-            return render_template("navigation_bar.html", username = username)     
+            return render_template("navigation_bar.html", username=username)
 
         return render_template("navigation_bar.html")
+
     """
     The page list will be created with the page names retrieved from the backend. Then the list will be returned 
     to the pages.html and the links will be accessible there
 
     backend: get_all_page_names will be accessed and all exisiting pages will be in a list
     """
+
     @app.route("/pages")
     def pages():
         backend = Backend()
-        page_list = backend.get_all_page_names
-        return render_template("pages.html", page_list = page_list)
+        page_list = backend.get_all_page_names()
+        return render_template("pages.html", page_list=page_list)
+
     """
     In the route get_pages, the user will be searching for a given page name, 
     depending on the page, the string retrieved from the backend will be implemented into 
@@ -56,12 +61,12 @@ def make_endpoints(app):
 
     backend: get_wiki_page will access each page and return the string of the contents of the pages 
     """
+
     @app.route("/pages/<name>")
     def get_pages(name):
         backend = Backend()
-        name_page = name + ".html"
-        content_str = backend.get_wiki_page(name_page)
-        return render_template("template_page.html",content_str = content_str)
+        content_str = Markup(backend.get_wiki_page(name))
+        return render_template("template_page.html", content_str=content_str)
 
     """
     The about route will retrieve the images from the given authors and retrieve it through the backend. 
@@ -70,18 +75,23 @@ def make_endpoints(app):
 
     backend: get_image will get the images of the authors and return the bytes of the images
     """
-    @app.route("/about", methods = ["GET"])
+
+    @app.route("/about", methods=["GET"])
     def about():
-        authors = {"Abhishek Khanal": "Abhishek.jpg", "Juan": "Juan.jpeg", "Christin": "Christin.jpeg"}
+        authors = {
+            "Abhishek Khanal": "Abhishek.jpg",
+            "Juan": "Juan.jpeg",
+            "Christin": "Christin.jpeg"
+        }
         for author in authors:
             backend = Backend()
             image_bytes = backend.get_image(authors[author])
-            authors[author] = f"data:image/jpeg;base64,{base64.b64encode(image_bytes).decode('utf-8')}"
+            authors[
+                author] = f"data:image/jpeg;base64,{base64.b64encode(image_bytes).decode('utf-8')}"
 
-        return render_template("about.html", authors = authors)
-    
+        return render_template("about.html", authors=authors)
 
-    @app.route("/sign_up", methods =['GET', 'POST'])
+    @app.route("/sign_up", methods=['GET', 'POST'])
     def sign_up():
         """Routes wiki to sign up page, where users can submit their username and password. 
 
@@ -113,7 +123,7 @@ def make_endpoints(app):
             password = request.form['password']
             account_check = backend.sign_up(username, password)
             if account_check:  # True if sign up is successful
-                session['loggedin'] = True  
+                session['loggedin'] = True
                 session['username'] = username
                 return redirect(url_for('home'))
             else:
@@ -121,7 +131,7 @@ def make_endpoints(app):
 
         return render_template('sign_up.html', message=message)
 
-    @app.route("/login", methods =['GET', 'POST'])
+    @app.route("/login", methods=['GET', 'POST'])
     def login():
         """Routes wiki to the login page, where the user can submit their login credentials.
 
@@ -152,7 +162,7 @@ def make_endpoints(app):
             password = request.form['password']
             account_check = backend.sign_in(username, password)
             if account_check:  # True if login is successful
-                session['loggedin'] = True  
+                session['loggedin'] = True
                 session['username'] = username
                 return render_template('main.html')
             else:
@@ -160,7 +170,7 @@ def make_endpoints(app):
 
         return render_template('login.html', message=message)
 
-    @app.route("/logout", methods =['GET', 'POST'])
+    @app.route("/logout", methods=['GET', 'POST'])
     def logout():
         """If the user has logged in status, it will log out the user.
 
@@ -178,7 +188,7 @@ def make_endpoints(app):
         session.pop('username', None)
         return redirect(url_for('home'))
 
-    @app.route("/upload", methods =['GET', 'POST'])
+    @app.route("/upload", methods=['GET', 'POST'])
     def upload():
         """Routes to the upload page, where the user can upload images or html files.
 
@@ -203,7 +213,7 @@ def make_endpoints(app):
 
         backend = Backend()
         message = ''
-        allowed_types = set(['.html', '.png', '.jpg', '.jpeg']) 
+        allowed_types = set(['.html', '.png', '.jpg', '.jpeg'])
         if request.method == 'POST':
             if 'file' not in request.files:
                 message = 'File did not input'

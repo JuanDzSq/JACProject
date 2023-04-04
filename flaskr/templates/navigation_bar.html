@@ -2,29 +2,29 @@
 <html>
 
 <body>
-    <!-- TODO(Project 1): Implement routes. -->
-    {% block navigation %}
-    <ul>
+    <nav>
         {% if session['loggedin'] %}
             {% for href, caption in [('home', 'Home'),
-                                    ('pages', 'Pages'),
-                                    ('about', 'About'),
-                                    ('upload', 'Upload'),
-                                    ('logout', 'Logout')]: %}
-                <li><a href={{ url_for(href) }}>{{ caption }}</a></li>
-                {{ username }}
+            ('pages', 'Pages'),
+            ('about', 'About'),
+            ('upload', 'Upload'),
+            ('logout', 'Logout')]: %}
+                <a href={{ url_for(href) }}>{{ caption }}</a>
             {% endfor %}
+            {{ session['username'] }}
         {% else %}
             {% for href, caption in [('home', 'Home'),
-                                    ('pages', 'Pages'),
-                                    ('about', 'About'),
-                                    ('login', 'Login'),
-                                    ('sign_up', 'Sign Up')]: %}
-                <li><a href={{ url_for(href) }}>{{ caption }}</a></li>
+            ('pages', 'Pages'),
+            ('about', 'About'),
+            ('login', 'Login'),
+            ('sign_up', 'Sign Up')]: %}
+                <a href={{ url_for(href) }}>{{ caption }}</a>
             {% endfor %}
         {% endif %}
-        </ul>
-        {% endblock %}
+    </nav>
+
+    {% block content %} {% endblock %}
+        
 </body>
 
 </html>

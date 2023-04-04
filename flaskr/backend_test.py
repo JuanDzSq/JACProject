@@ -5,6 +5,7 @@ import hashlib
 from unittest.mock import MagicMock
 import io
 
+
 @pytest.fixture
 def backend():
     """
@@ -15,13 +16,14 @@ def backend():
     backend.user_bucket = MagicMock()
     return backend
 
+
 def test_get_wiki_page(backend):
     """
     Test that the `get_wiki_page` method retrieves the correct content for an existing page.
     """
     mock_page_name = "TeamJacHomePage.html"
     mock_page_content = "<html><body><h1>This is TeamJAC</h1></body></html>"
-    
+
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
 
@@ -58,8 +60,10 @@ def test_get_all_page_names(backend):
     mock_blob_2.name = "Pages/page2.html"
     mock_blob_3 = MagicMock()
     mock_blob_3.name = "Pages/page3.txt"
-  
-    backend.content_bucket.list_blobs.return_value = [mock_blob_1, mock_blob_2, mock_blob_3]
+
+    backend.content_bucket.list_blobs.return_value = [
+        mock_blob_1, mock_blob_2, mock_blob_3
+    ]
     assert backend.get_all_page_names() == ['page1.html', 'page2.html']
 
 
@@ -124,15 +128,17 @@ def test_sign_up_existing_user(backend):
     result = backend.sign_up(username, "somepassword")
     assert result == False
 
+
 def test_sign_in_user_exists(backend):
     """
     Test that the `sign_in` method returns True when a user with the given username and correct password exists.
     """
     username = "Abhishek"
     password = "mypassword"
-    hashed_password = hashlib.sha256(("teamjacwillmakeit" + password).encode()).hexdigest()
+    hashed_password = hashlib.sha256(
+        ("teamjacwillmakeit" + password).encode()).hexdigest()
     user_data = f"{username}:{hashed_password}"
-    
+
     mock_blob = MagicMock()
     mock_blob.download_as_text.return_value = user_data
 
@@ -156,11 +162,12 @@ def test_sign_in_user_does_not_exist(backend):
     result = backend.sign_in(username, password)
     assert result == False
 
+
 def test_sign_in_incorrect_password(backend):
     """
     Test that the `sign_in` method returns False when a user with the given username exists,
     but the provided password is incorrect.
-    """    
+    """
     username = "Abhishek"
     password = "mypassword"
     hashed_password = hashlib.sha256("wrongpassword".encode()).hexdigest()
@@ -171,6 +178,7 @@ def test_sign_in_incorrect_password(backend):
     backend.user_bucket.blob.return_value = mock_blob
     result = backend.sign_in(username, password)
     assert result == False
+
 
 def test_get_image(backend):
     """
