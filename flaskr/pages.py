@@ -91,6 +91,12 @@ def make_endpoints(app):
 
         return render_template("about.html", authors=authors)
 
+    #(Project 2: Christin ): Implementing routes for Voting feature
+    @app.route("/voting_section")
+    def voting_section():
+        return render_template("voting_section.html")
+
+
     @app.route("/sign_up", methods=['GET', 'POST'])
     def sign_up():
         """Routes wiki to sign up page, where users can submit their username and password. 
