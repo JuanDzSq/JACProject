@@ -63,7 +63,7 @@ def make_endpoints(app):
     """
 
     @app.route("/pages/<name>")
-    def get_pages(name):
+    def get_pages(name): #upvotes and downvotes in parameters
         backend = Backend()
         content_str = Markup(backend.get_wiki_page(name))
         return render_template("template_page.html", content_str=content_str)
@@ -90,11 +90,6 @@ def make_endpoints(app):
                 author] = f"data:image/jpeg;base64,{base64.b64encode(image_bytes).decode('utf-8')}"
 
         return render_template("about.html", authors=authors)
-
-    #(Project 2: Christin ): Implementing routes for Voting feature
-    @app.route("/voting_section")
-    def voting_section():
-        return render_template("voting_section.html")
 
 
     @app.route("/sign_up", methods=['GET', 'POST'])
