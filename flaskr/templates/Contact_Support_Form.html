@@ -1,0 +1,42 @@
+{% extends 'navigation_bar.html' %}
+{% block content %}
+<!DOCTYPE html>
+<head>
+    <title>Contact Form</title>
+</head>
+<body>
+    <h3>Contact us</h3>
+    <form id="fcf-form-id" class="fcf-form-class" method="post" action="{{url_for('contact_support')}}"></form>
+            <label for="Name" class="fcf-label">Your name</label>
+            <div class="fcf-input-group">
+                {% if session['loggedin'] %}
+                    <input type="text" id="Name" name="Name" class="fcf-form-control" required value={{ session['username'] }}>
+                {% else %}
+                    <input type="text" id="Name" name="Name" class="fcf-form-control" required>
+                {% endif %}
+                
+            </div>
+        <div class="fcf-form-group">
+            <label for="Email" class="fcf-label">Your email address</label>
+            <div class="fcf-input-group">
+                <input type="email" id="email" name="Email" class="fcf-form-control" required>
+            </div>
+        <div class="fcf-form-group">
+            <!--Abhishek's comment box here-->
+        </div>
+        <div class="fcf-form-group">
+            <button type="submit" id="fcf-button" class="fcf-btn fcf-btn-primary fcf-btn-lg fcf-btn-block">Send</button>
+        </div>
+</body>
+<style>
+    body {
+    font-family: -apple-system, Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgb(1, 1, 1);
+    text-align: left;
+}
+</style>
+</html>
+
+{% endblock %}

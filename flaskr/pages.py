@@ -40,6 +40,21 @@ def make_endpoints(app):
 
         return render_template("navigation_bar.html")
 
+    #Feature routes
+    @app.route("/contact_support", methods=['GET', 'POST'])
+    def contact_support():
+        backend = Backend()
+        if request.method == 'POST' and 'Name' in request.form and 'Email' in request.form:
+            Name = request.form['Name']
+            Email = request.form['Email']
+            account_check = backend.send_email(Name, Email)
+
+        if "username" in session:
+            username = session['username']
+            return render_template("Contact_Support_Form.html", username=username)
+
+        return render_template("Contact_Support_Form.html")
+
     """
     The page list will be created with the page names retrieved from the backend. Then the list will be returned 
     to the pages.html and the links will be accessible there

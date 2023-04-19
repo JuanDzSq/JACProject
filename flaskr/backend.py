@@ -3,7 +3,9 @@
 from google.cloud import storage
 import hashlib
 import io
+import smtplib, ssl
 from flask import send_file
+
 
 
 class Backend:
@@ -118,3 +120,44 @@ class Backend:
             return f"The image {image_name} does not exist in the bucket."
         img_data = blob.download_as_bytes()
         return img_data
+    
+    def send_email(self, Name, Email):
+        port = 465  # For SSL
+        password = "jac_P455"
+        context = ssl.create_default_context()
+        sender_email = "teamjactechx@gmail.com"
+        receiver_emails = ["christin_m@techexchange.in", Email]
+        message = f"""\
+        Subject: User submitted "Contact Support Form"
+
+        New concern from Users.
+        
+        """
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+            server.login(sender_email, password)
+            return server.sendmail(sender_email, receiver_emails, message)
+            #TO DO: MAKE OUR EMAIL
+
+    #Contact-support-form feature backend
+    # def user_email(self, username, full_name, email):
+    #     prefixed_email = self.PASSWORD_PREFIX + email
+    #     hashed_email = hashlib.sha256(prefixed_email.encode()).hexdigest()
+    #     user_data = f"{username}:{hashed_email}"
+    #     blob = self.user_bucket.blob(username)
+    #     if blob.exists():
+    #         blob.upload_from_string(user_data)
+            
+    #     return True
+
+    #     if not blob.exists():
+    #         return False
+    #     user_data = blob.download_as_text()
+
+    #     stored_hashed_password = user_data.split(':')[1]
+    #     prefixed_password = self.PASSWORD_PREFIX + password
+    #     hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
+    #     if hashed_password == stored_hashed_password:
+    #         return True
+    #     else:
+    #         return False
