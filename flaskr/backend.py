@@ -121,12 +121,13 @@ class Backend:
         img_data = blob.download_as_bytes()
         return img_data
     
-    def send_email(self, Name, Email):
+    # TODO(christin): Update Contact support message to include the user's name. 
+    def send_email(self, name, email):
         port = 465  # For SSL
-        password = "jac_P455"
+        password = "zsxprlnwxsqgyolw"
         context = ssl.create_default_context()
         sender_email = "teamjactechx@gmail.com"
-        receiver_emails = ["christin_m@techexchange.in", Email]
+        receiver_emails = ["christin_m@techexchange.in", email]
         message = f"""\
         Subject: User submitted "Contact Support Form"
 
@@ -137,7 +138,6 @@ class Backend:
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(sender_email, password)
             return server.sendmail(sender_email, receiver_emails, message)
-            #TO DO: MAKE OUR EMAIL
 
     #Contact-support-form feature backend
     # def user_email(self, username, full_name, email):

@@ -44,12 +44,15 @@ def make_endpoints(app):
     @app.route("/contact_support", methods=['GET', 'POST'])
     def contact_support():
         backend = Backend()
-        if request.method == 'POST' and 'Name' in request.form and 'Email' in request.form:
-            Name = request.form['Name']
-            Email = request.form['Email']
-            account_check = backend.send_email(Name, Email)
+        # TODO(christin): Catch exceptions that can be thrown by backend.send_email (specifically SMTPRecipientsRefused) https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.sendmail
+        if request.method == 'POST':
+            name = request.form['Name']
+            email = request.form['Email']
+            email_results = backend.send_email(name, email)
+            return redirect(url_for('home'))
+            
 
-        if "username" in session:
+        if 'username' in session:
             username = session['username']
             return render_template("Contact_Support_Form.html", username=username)
 

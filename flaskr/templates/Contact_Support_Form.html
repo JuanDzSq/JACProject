@@ -6,7 +6,7 @@
 </head>
 <body>
     <h3>Contact us</h3>
-    <form id="fcf-form-id" class="fcf-form-class" method="post" action="{{url_for('contact_support')}}"></form>
+    <form id="fcf-form-id" class="fcf-form-class" method="POST" action="{{url_for('contact_support')}}">
             <label for="Name" class="fcf-label">Your name</label>
             <div class="fcf-input-group">
                 {% if session['loggedin'] %}
@@ -27,6 +27,7 @@
         <div class="fcf-form-group">
             <button type="submit" id="fcf-button" class="fcf-btn fcf-btn-primary fcf-btn-lg fcf-btn-block">Send</button>
         </div>
+    </form>
 </body>
 <style>
     body {
