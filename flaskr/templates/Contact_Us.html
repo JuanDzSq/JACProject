@@ -1,0 +1,32 @@
+{% extends 'navigation_bar.html' %}
+{% block content %}
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Contact Support</title>
+    <style>
+      textarea {
+        width: 750px;
+        height: 200px;
+        padding: 10px;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Contact Us</h1>
+    <form>
+      <label for="comment">Comment:</label><br />
+      <textarea id="comment" name="comment" rows="20" cols="100"></textarea
+      ><br /><br />
+      <input type="submit" value="Submit" />
+    </form>
+  </body>
+</html>
+{% endblock %}
+
