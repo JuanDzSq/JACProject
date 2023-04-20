@@ -63,13 +63,6 @@ def make_endpoints(app):
 
         Also, If a user makes a comment, the function checks if the user is logged in or not and if the user is logged in then allows the comment to be stored in the backend and pulls from the backend to display it in the page when the GET method is called. If the user is not logged in, it stores the comment as well as the page name in the session and calls the login route where the user can login themselves.
 
-<<<<<<< HEAD
-    @app.route("/pages/<name>")
-    def get_pages(name): #upvotes and downvotes in parameters
-        backend = Backend()
-        content_str = Markup(backend.get_wiki_page(name))
-        return render_template("template_page.html", content_str=content_str)
-=======
         backend: get_wiki_page will access each page and return the string of the contents of the pages 
         """
         if request.method == "POST":
@@ -107,7 +100,6 @@ def make_endpoints(app):
                                    content_str=content_str,
                                    comments=comments,
                                    comment_text=comment_text)
->>>>>>> 5d1652ede651d7c3a68a0ad004167b864100e66f
 
     """
     The about route will retrieve the images from the given authors and retrieve it through the backend. 
@@ -131,7 +123,6 @@ def make_endpoints(app):
                 author] = f"data:image/jpeg;base64,{base64.b64encode(image_bytes).decode('utf-8')}"
 
         return render_template("about.html", authors=authors)
-
 
     @app.route("/sign_up", methods=['GET', 'POST'])
     def sign_up():
