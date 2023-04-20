@@ -4,16 +4,21 @@
 
 <html>
   <head>
-    <title>Contact Support</title>
+    <title>Contact Support Form</title>
     <style>
       textarea {
         width: 750px;
         height: 200px;
         padding: 10px;
-        font-size: 16px;
+        font-size: 20px;
         font-family: Arial, sans-serif;
         border-radius: 5px;
         border: 1px solid #ccc;
+      }
+
+      input[type="submit"] {
+        font-size: 20px;
+        padding: 6px 12px;
       }
     </style>
   </head>
@@ -21,9 +26,9 @@
   <body>
     <h1>Contact Us</h1>
     <form>
-      <label for="comment">Comment:</label><br />
+      <h3><label for="comment">Comment:</label></h3>
       <textarea id="comment" name="comment" rows="20" cols="100"></textarea
-      ><br /><br />
+      ></br>
       <input type="submit" value="Submit" />
     </form>
   </body>
