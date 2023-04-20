@@ -65,31 +65,37 @@ def test_get_all_page_names(backend):
     ]
     assert backend.get_all_page_names() == ['page1.html', 'page2.html']
 
+
 def test_upload_comments_when_previous_comments_exists(backend):
     """
     Tests that the upload_comments method uploads the new comment to a page's comment file along with other existing comments
     """
-    
+
     mock_page_name = "page1"
     mock_username = "Abhishek"
     new_mock_comment = "I really enjoyed reading the content from Page1. Really Great Content."
     end_of_comment_message = "#2109abhishekfromnepal870+)_@)#_()*)(902#$%@"
     previous_mock_comments = "Comment 1" + end_of_comment_message + "Comment 2" + end_of_comment_message + "Comment 3"
-    
+
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
-    mock_blob.download_as_text.return_value =  previous_mock_comments 
+    mock_blob.download_as_text.return_value = previous_mock_comments
     backend.content_bucket.blob.return_value = mock_blob
 
     backend.upload_comments(mock_page_name, new_mock_comment, mock_username)
-    expected_comments = ["Comment 1", "Comment 2", "Comment 3", f"{mock_username}: {new_mock_comment}"]
+    expected_comments = [
+        "Comment 1", "Comment 2", "Comment 3",
+        f"{mock_username}: {new_mock_comment}"
+    ]
     comment_text_file = f"{mock_page_name}.txt"
 
-    mock_blob.upload_from_string.assert_called_once_with(end_of_comment_message.join(expected_comments))
+    mock_blob.upload_from_string.assert_called_once_with(
+        end_of_comment_message.join(expected_comments))
     backend.content_bucket.blob.assert_called_once_with(comment_text_file)
-    returned_comments = mock_blob.upload_from_string.call_args[0][0].split(end_of_comment_message)
+    returned_comments = mock_blob.upload_from_string.call_args[0][0].split(
+        end_of_comment_message)
     assert expected_comments == returned_comments
-    
+
 
 def test_upload_comments_when_no_previous_comments_exists(backend):
     """
@@ -107,11 +113,12 @@ def test_upload_comments_when_no_previous_comments_exists(backend):
 
     comment_text_file = f"{mock_page_name}.txt"
     expected_updated_collection = f"{mock_username}: {new_mock_comment}"
-    mock_blob.upload_from_string.assert_called_once_with(expected_updated_collection)
+    mock_blob.upload_from_string.assert_called_once_with(
+        expected_updated_collection)
     backend.content_bucket.blob.assert_called_once_with(comment_text_file)
     returned_comments = mock_blob.upload_from_string.call_args[0][0]
     assert expected_updated_collection == returned_comments
-    
+
 
 def test_get_comments_when_no_comments_exist(backend):
     """
@@ -124,6 +131,7 @@ def test_get_comments_when_no_comments_exist(backend):
     expected_result = []
     assert backend.get_comments(mock_page_name) == expected_result
 
+
 def test_get_comments_when_atleast_a_comments_exist(backend):
     """
     Tests that the get_comments method returns the list of existing comments when there are multiple comments existing for a particular page.
@@ -133,10 +141,11 @@ def test_get_comments_when_atleast_a_comments_exist(backend):
     mock_comments = "Comment 1" + end_of_comment_message + "Comment 2" + end_of_comment_message + "Comment 3"
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
-    mock_blob.download_as_text.return_value =  mock_comments  
+    mock_blob.download_as_text.return_value = mock_comments
     backend.content_bucket.blob.return_value = mock_blob
     expected_result = ["Comment 1", "Comment 2", "Comment 3"]
     assert backend.get_comments(mock_page_name) == expected_result
+
 
 def test_upload_html_file(backend):
     """

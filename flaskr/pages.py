@@ -53,7 +53,6 @@ def make_endpoints(app):
         page_list = backend.get_all_page_names()
         return render_template("pages.html", page_list=page_list)
 
-
     @app.route("/pages/<name>", methods=["GET", "POST"])
     def get_pages(name):
         """
@@ -68,8 +67,10 @@ def make_endpoints(app):
         """
         if request.method == "POST":
             if "loggedin" not in session:
-                if request.form.get("comment") and not request.form.get("comment").isspace():
-                    session["page_to_redirect"] = url_for('get_pages', name=name)
+                if request.form.get("comment") and not request.form.get(
+                        "comment").isspace():
+                    session["page_to_redirect"] = url_for('get_pages',
+                                                          name=name)
                     session["comment_text"] = request.form.get("comment")
                 return redirect("/login")
             else:
@@ -77,23 +78,28 @@ def make_endpoints(app):
                 comment_text = request.form.get("comment")
                 username = session.get("username")
                 if comment_text and not comment_text.isspace():
-                    page_name = name.split(".")[0]                    
+                    page_name = name.split(".")[0]
                     backend.upload_comments(page_name, comment_text, username)
                 else:
-                    flash("Comment cannot be empty or contain only whitespace characters", "error")
+                    flash(
+                        "Comment cannot be empty or contain only whitespace characters",
+                        "error")
                     return redirect(url_for('get_pages', name=name))
                 return redirect(url_for('get_pages', name=name))
         else:
             backend = Backend()
             content_str = Markup(backend.get_wiki_page(name))
-            comment_file = name.split(".")[0]            
-            comments = backend.get_comments(comment_file) 
+            comment_file = name.split(".")[0]
+            comments = backend.get_comments(comment_file)
 
             if "comment_text" in session:
                 comment_text = session.pop("comment_text")
             else:
                 comment_text = ""
-            return render_template("template_page.html", content_str=content_str, comments = comments, comment_text=comment_text)
+            return render_template("template_page.html",
+                                   content_str=content_str,
+                                   comments=comments,
+                                   comment_text=comment_text)
 
     """
     The about route will retrieve the images from the given authors and retrieve it through the backend. 

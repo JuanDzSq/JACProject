@@ -59,7 +59,7 @@ class Backend:
         """
 
         end_of_comment_message = "#2109abhishekfromnepal870+)_@)#_()*)(902#$%@"
-        comment_text_file = f"{page_name}.txt"        
+        comment_text_file = f"{page_name}.txt"
         blob = self.content_bucket.blob(comment_text_file)
         if blob.exists():
             comments_text = blob.download_as_text()
@@ -72,7 +72,6 @@ class Backend:
         blob.upload_from_string(updated_comments_collection)
 
     def get_comments(self, page_name):
-
         """
         Retrieves the comments from a text file in the content bucket for a given wiki page.
 
@@ -82,17 +81,17 @@ class Backend:
         Returns:
         A list of strings representing the comments for the given wiki page.
         """
-    
+
         end_of_comment_message = "#2109abhishekfromnepal870+)_@)#_()*)(902#$%@"
         comment_text_file = f"{page_name}.txt"
         blob = self.content_bucket.blob(comment_text_file)
         if blob.exists():
             comments_str = blob.download_as_text()
             comments = comments_str.split(end_of_comment_message)
-            return comments        
+            return comments
         else:
             return []
-            
+
     def upload(self, file_content, file_name):
         """
         Uploads the given file content to the content bucket with the given filename.

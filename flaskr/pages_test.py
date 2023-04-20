@@ -57,6 +57,8 @@ def test_sign_up_successful(client, backend):
 """
 Testing if the page will be accessed
 """
+
+
 def test_working_get_pages(client, backend):
     backend().get_all_page_names = MagicMock(return_value=['action'])
     # print(backend.get_all_page_names())
@@ -64,6 +66,7 @@ def test_working_get_pages(client, backend):
     # print(response.data)
     assert b"<title> Pages contained in the Team JAC Wiki! </title>" in response.data
     assert b"<a href= /pages/action>action</a>" in response.data
+
 
 def test_non_empty_user_comment_when_logged_in(client, backend):
     """
@@ -81,7 +84,8 @@ def test_non_empty_user_comment_when_logged_in(client, backend):
     backend_instance.upload_comments = MagicMock()
 
     response = client.post(f"/pages/{page_name}", data={"comment": comment})
-    backend_instance.upload_comments.assert_called_once_with(page_name.split(".")[0], comment, username)
+    backend_instance.upload_comments.assert_called_once_with(
+        page_name.split(".")[0], comment, username)
     assert response.status_code == 302
     assert response.headers['Location'] == f"/pages/{page_name}"
     assert b"Redirecting" in response.data
@@ -89,6 +93,7 @@ def test_non_empty_user_comment_when_logged_in(client, backend):
     resp = client.get(f'/pages/{page_name}')
     assert resp.status_code == 200
     assert b"submit" in resp.data
+
 
 def test_empty_user_comment_when_logged_in(client, backend):
     """
@@ -105,7 +110,8 @@ def test_empty_user_comment_when_logged_in(client, backend):
     backend_instance = backend.return_value
     backend_instance.upload_comments = MagicMock()
 
-    response = client.post(f"/pages/{page_name}", data={"comment": empty_comment})
+    response = client.post(f"/pages/{page_name}",
+                           data={"comment": empty_comment})
     assert not backend_instance.upload_comments.called
     assert response.status_code == 302
     assert response.headers['Location'] == f"/pages/{page_name}"
@@ -115,8 +121,8 @@ def test_empty_user_comment_when_logged_in(client, backend):
     assert resp.status_code == 200
     assert b"submit" in resp.data
 
-def test_user_comment_when_not_logged_in(client, backend):
 
+def test_user_comment_when_not_logged_in(client, backend):
     """
     Test that user is redirected to the logged in page when he makes a comment post when not logged in
     """
@@ -132,6 +138,7 @@ def test_user_comment_when_not_logged_in(client, backend):
     assert response.headers['Location'] == "/login"
     assert b"Redirecting" in response.data
     assert b'target URL: <a href="/login">/login</a>' in response.data
+
 
 def test_user_comment_is_displayed_in_pages(client, backend):
     """
@@ -153,6 +160,7 @@ def test_user_comment_is_displayed_in_pages(client, backend):
     for comment in comments:
         assert comment.encode() in response.data
 
+
 def test_login_redirects_to_last_page(client, backend):
     """
     Tests that after successful login, the user is redirected to the previously opened page where the user was about to post comment and also confirms that the response contains "Redirecting" and the name of the page that the user was on before logging in.
@@ -160,7 +168,7 @@ def test_login_redirects_to_last_page(client, backend):
     page_name = "page1"
     data_dict = {'username': 'testusername', 'password': 'test'}
     backend().sign_in.return_value = True
-    
+
     with client.session_transaction() as session:
         session['page_to_redirect'] = page_name
 
@@ -170,6 +178,7 @@ def test_login_redirects_to_last_page(client, backend):
     assert b"Redirecting" in response.data
     assert b"page1" in response.data
 
+
 def test_page_in_session_after_comment_post(client, backend):
     """
     Test that the session is set to store the name of the previously opened page, which allows the user to back to the previously opened page where the user was about the post comment after he logs in.
@@ -177,7 +186,7 @@ def test_page_in_session_after_comment_post(client, backend):
 
     page_name = "page1"
     comment = "This is test comment"
-    
+
     response = client.post(f"/pages/{page_name}", data={'comment': comment})
     with client.session_transaction() as session:
         assert response.status_code == 302
@@ -199,6 +208,7 @@ def test_comment_stays_in_form_after_redirecting_from_login(client, backend):
 
     response = client.get(response.location, follow_redirects=True)
     assert response.status_code == 200
+
 
 """
 Testing if authors images show
