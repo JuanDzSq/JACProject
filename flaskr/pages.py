@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, flash, render_template, request, redirect, url_for, session
 from markupsafe import Markup
 from flaskr.backend import Backend
 from fileinput import filename
@@ -53,20 +53,61 @@ def make_endpoints(app):
         page_list = backend.get_all_page_names()
         return render_template("pages.html", page_list=page_list)
 
-    """
-    In the route get_pages, the user will be searching for a given page name, 
-    depending on the page, the string retrieved from the backend will be implemented into 
-    the template.html created, meaning that the page the user also creates will have its 
-    own html page.
+    @app.route("/pages/<name>", methods=["GET", "POST"])
+    def get_pages(name):
+        """
+        In the route get_pages, the user will be searching for a given page name, 
+        depending on the page, the string retrieved from the backend will be implemented into 
+        the template.html created, meaning that the page the user also creates will have its 
+        own html page.
 
-    backend: get_wiki_page will access each page and return the string of the contents of the pages 
-    """
+        Also, If a user makes a comment, the function checks if the user is logged in or not and if the user is logged in then allows the comment to be stored in the backend and pulls from the backend to display it in the page when the GET method is called. If the user is not logged in, it stores the comment as well as the page name in the session and calls the login route where the user can login themselves.
 
+<<<<<<< HEAD
     @app.route("/pages/<name>")
     def get_pages(name): #upvotes and downvotes in parameters
         backend = Backend()
         content_str = Markup(backend.get_wiki_page(name))
         return render_template("template_page.html", content_str=content_str)
+=======
+        backend: get_wiki_page will access each page and return the string of the contents of the pages 
+        """
+        if request.method == "POST":
+            if "loggedin" not in session:
+                if request.form.get("comment") and not request.form.get(
+                        "comment").isspace():
+                    session["page_to_redirect"] = url_for('get_pages',
+                                                          name=name)
+                    session["comment_text"] = request.form.get("comment")
+                return redirect("/login")
+            else:
+                backend = Backend()
+                comment_text = request.form.get("comment")
+                username = session.get("username")
+                if comment_text and not comment_text.isspace():
+                    page_name = name.split(".")[0]
+                    backend.upload_comments(page_name, comment_text, username)
+                else:
+                    flash(
+                        "Comment cannot be empty or contain only whitespace characters",
+                        "error")
+                    return redirect(url_for('get_pages', name=name))
+                return redirect(url_for('get_pages', name=name))
+        else:
+            backend = Backend()
+            content_str = Markup(backend.get_wiki_page(name))
+            comment_file = name.split(".")[0]
+            comments = backend.get_comments(comment_file)
+
+            if "comment_text" in session:
+                comment_text = session.pop("comment_text")
+            else:
+                comment_text = ""
+            return render_template("template_page.html",
+                                   content_str=content_str,
+                                   comments=comments,
+                                   comment_text=comment_text)
+>>>>>>> 5d1652ede651d7c3a68a0ad004167b864100e66f
 
     """
     The about route will retrieve the images from the given authors and retrieve it through the backend. 
@@ -140,7 +181,8 @@ def make_endpoints(app):
         will be checked against what is in the username/password bucket. If both the pair 
         have a match, then the login is succesful and the user gains logged in status and be 
         rerouted to the home page. If the user is already loggedin and attempts to enter this
-        route, they will be rerouted to the home page.
+        route, they will be rerouted to the home page. Also, if the session has page_to_redirect 
+        then redirects the client to that page instead of redirecting to the home page.
 
         Attributes:
             request.form: a dictionary that contains all information submitted in the form within
@@ -165,6 +207,9 @@ def make_endpoints(app):
             if account_check:  # True if login is successful
                 session['loggedin'] = True
                 session['username'] = username
+                if "page_to_redirect" in session:
+                    redirect_url = session.pop("page_to_redirect")
+                    return redirect(redirect_url)
                 return render_template('main.html')
             else:
                 message = 'Incorrect username or password.'
