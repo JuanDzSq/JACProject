@@ -50,6 +50,50 @@ class Backend:
                 page_names.append(blob.name.split('/')[-1])
         return page_names
 
+    def upload_comments(self, page_name, comment_text, username):
+        """
+        Uploads a new comment to a comment file in the content bucket, or creates a new comment file for the particular page if it doesn't exist.
+
+        Args:
+        - page_name (str): The name of the page to upload the comment to.
+        - comment_text (str): The text of the comment to upload.
+        - username (str): The username of the user who posted the comment.
+        """
+
+        end_of_comment_message = "#2109abhishekfromnepal870+)_@)#_()*)(902#$%@"
+        comment_text_file = f"{page_name}.txt"
+        blob = self.content_bucket.blob(comment_text_file)
+        if blob.exists():
+            comments_text = blob.download_as_text()
+            comments = comments_text.split(end_of_comment_message)
+        else:
+            comments = []
+        new_comment = f"{username}: {comment_text}"
+        comments.append(new_comment)
+        updated_comments_collection = end_of_comment_message.join(comments)
+        blob.upload_from_string(updated_comments_collection)
+
+    def get_comments(self, page_name):
+        """
+        Retrieves the comments from a text file in the content bucket for a given wiki page.
+
+        Args:
+        - page_name (str): The name of the wiki page to retrieve comments for.
+
+        Returns:
+        A list of strings representing the comments for the given wiki page.
+        """
+
+        end_of_comment_message = "#2109abhishekfromnepal870+)_@)#_()*)(902#$%@"
+        comment_text_file = f"{page_name}.txt"
+        blob = self.content_bucket.blob(comment_text_file)
+        if blob.exists():
+            comments_str = blob.download_as_text()
+            comments = comments_str.split(end_of_comment_message)
+            return comments
+        else:
+            return []
+
     def upload(self, file_content, file_name):
         """
         Uploads the given file content to the content bucket with the given filename.
@@ -122,41 +166,55 @@ class Backend:
         return img_data
     
     # TODO(christin): Update Contact support message to include the user's name. 
-    def send_email(self, name, email):
+    def send_email(self, name, email, user_comment):
         port = 465  # For SSL
         password = "zsxprlnwxsqgyolw"
         context = ssl.create_default_context()
         sender_email = "teamjactechx@gmail.com"
         receiver_emails = ["christin_m@techexchange.in", email]
+
         message = f"""\
         Subject: {name} submmitted a Contact Support Form!
 
-        New concern from {name}.
+        New concern from {name} : 
+
+            {user_comment}
+
+        Please respond back to {name} at {email}
         
         """
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(sender_email, password)
             return server.sendmail(sender_email, receiver_emails, message)
 
-    #Contact-support-form feature backend
-    # def user_email(self, username, full_name, email):
-    #     prefixed_email = self.PASSWORD_PREFIX + email
-    #     hashed_email = hashlib.sha256(prefixed_email.encode()).hexdigest()
-    #     user_data = f"{username}:{hashed_email}"
-    #     blob = self.user_bucket.blob(username)
-    #     if blob.exists():
-    #         blob.upload_from_string(user_data)
-            
-    #     return True
+    # Contact-support-form feature backend
+    
+    def user_email(self, name, email):
+        prefixed_email = self.PASSWORD_PREFIX + email
+        hashed_email = hashlib.sha256(prefixed_email.encode()).hexdigest()
+        user_info = f"{hashed_email}"
+        anonymous_user_info = f"{name}:{hashed_email}"
+        blob = self.user_bucket.blob(name)
 
-    #     if not blob.exists():
-    #         return False
-    #     user_data = blob.download_as_text()
+        if blob.exists():
+            blob.upload_from_string(user_info)
+        blob.upload_from_string(anonymous_user_info)
 
-    #     stored_hashed_password = user_data.split(':')[1]
-    #     prefixed_password = self.PASSWORD_PREFIX + password
-    #     hashed_password = hashlib.sha256(prefixed_password.encode()).hexdigest()
-    #     if hashed_password == stored_hashed_password:
-    #         return True
-    #     else:
-    #         return False
+
+# example_backend = Backend()
+# username = "Abhishek Khanal"
+# page_name = "DreamLeagueSoccer"
+# comment_text = "Hey All! I really liked the content you all have.\n I am so glad that you people are able to produce such a great contents.\n I enjoyed reading your contents.\n\nThankyou"
+# example_backend.upload_comments(page_name, comment_text, username)
+
+# example_backend = Backend()
+# username = "Abhishek"
+# page_name = "DreamLeagueSoccer"
+# comment_text = "Hey All!"
+# example_backend.upload_comments(page_name, comment_text, username)
+
+# example_backend = Backend()
+# page_name = "DreamLeagueSoccer"
+# comments = example_backend.get_comments(page_name)
+# print(comments)
+# print(len(comments))

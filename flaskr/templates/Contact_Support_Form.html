@@ -21,12 +21,17 @@
             <div class="fcf-input-group">
                 <input type="email" id="email" name="Email" class="fcf-form-control" required>
             </div>
-        <div class="fcf-form-group">
-            <!--Abhishek's comment box here-->
-        </div>
+<!-- place holder until i get Abhishek's comment box to merge with this form -->
+            <div class="fcf-form-group">
+                <label for="comment" class="fcf-label">Your message</label>
+                <div class="fcf-input-group">
+                    <textarea id="comment" name="comment" class="fcf-form-control" rows="6" maxlength="3000" required ></textarea>
+                </div>
+            </div>
         <div class="fcf-form-group">
             <button type="submit" id="fcf-button" class="fcf-btn fcf-btn-primary fcf-btn-lg fcf-btn-block">Send</button>
-        </div>
+        </div> 
+<!-- place holder until i get Abhishek's comment box to merge with this form -->
     </form>
 </body>
 <style>
@@ -39,5 +44,11 @@
 }
 </style>
 </html>
+
+    <!-- <script type="text/javascript">
+        $(function() {
+        $("comment").load("Contact_Us.html");
+        });
+    </script> -->
 
 {% endblock %}
