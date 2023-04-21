@@ -217,3 +217,42 @@ Testing if authors images show
 #     author = {'Christin': 'Christin.jpeg'}
 #     response = self.post("/about", data = author)
 #     self.assertEqual(response.status_code)
+
+"""
+Testing if client can access the Contact Support Form 
+"""
+def test_request_contact_support_form(client):
+    response = client.get("/contact_support")
+    assert b"<title>Contact Form</title>" in response.data
+
+def test_username_in_form_if_logged_in(client, backend):
+    username = "TeamJAC"
+    with client.session_trasaction() as session:
+        session['loggedin'] = True
+        session['username'] = username
+    
+    backend_instance = backend.return_value
+    backend_instance.contact_supoort = MagicMock()
+
+    response = client.post(f"/contact_support", data={"Name": username})
+    expected = client.get("/")
+    assert reponse.data == expected.data
+
+def test_no_username_in_form_if_not_logged_in(client, backend):
+    username = " "
+    full_name = "Christin Moreno"
+    with client.session_trasaction() as session:
+        session['loggedin'] = False
+        session['username'] = username
+    
+    backend_instance = backend.return_value
+    backend_instance.contact_supoort = MagicMock()
+
+    response_username = client.post(f"/contact_support", data={"Name": username})
+    expected_username = client.get("/")
+    assert reponse_username.data == expected_username.data
+
+    response_full_name = client.post(f"/contact_support", data={"Name": full_name})
+    expected_full_name = client.post(f"/contact_support", data={"Name": fulle_name})
+    assert response_full_name.data == expected_full_name.data
+
