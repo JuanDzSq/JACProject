@@ -91,6 +91,41 @@ class Backend:
             return comments
         else:
             return []
+    
+    def get_votes(self, page_name):
+        """Gives the votes corresponding to the given wiki page.
+        
+        If the page's votes are already in the content bucket, it retrieves its
+        votes. If the page is not in the bucket, then it gets added into the bucket
+        with zero votes.
+
+        Args:
+        - page_name (str): The name of the wiki page to retrieve comments for.
+
+         Returns:
+         A tuple with format (up_vote, down_vote), representing the votes of the 
+         given wiki page.
+        """
+        end_of_vote_message = "---"
+        blob = self.content_bucket.blob("vote_text_file.txt")
+        if not blob.exists():
+            page_vote_text = f"{page_name}, 0, 0"
+            blob.upload_from_string(page_vote_text)
+            return (0,0)
+        page_votes_str = blob.download_as_text()
+        page_votes_list = page_votes_str.split(end_of_vote_message)
+
+        for page_votes in page_votes_list:
+            votes = page_votes.split(",")
+            if votes[0] == page_name:
+                up = votes[1]
+                down = votes[2]
+                return (up, down)
+            
+        page_votes_list.append(f"{page_name}, 0, 0")
+        page_vote_text = end_of_vote_message.join(page_votes_list)
+        blob.upload_from_string(page_vote_text)
+        return (0,0)
 
     def upload(self, file_content, file_name):
         """

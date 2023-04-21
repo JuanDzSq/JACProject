@@ -86,7 +86,7 @@ def make_endpoints(app):
                         "error")
                     return redirect(url_for('get_pages', name=name))
                 return redirect(url_for('get_pages', name=name))
-        else:
+        if request.method == "GET":
             backend = Backend()
             content_str = Markup(backend.get_wiki_page(name))
             comment_file = name.split(".")[0]
@@ -96,10 +96,14 @@ def make_endpoints(app):
                 comment_text = session.pop("comment_text")
             else:
                 comment_text = ""
+            
+            page_up_votes, page_down_votes = backend.get_votes(name.split("."[0]))
             return render_template("template_page.html",
                                    content_str=content_str,
                                    comments=comments,
-                                   comment_text=comment_text)
+                                   comment_text=comment_text, 
+                                   page_up_votes=page_up_votes, 
+                                   page_down_votes=page_down_votes)
 
     """
     The about route will retrieve the images from the given authors and retrieve it through the backend. 
