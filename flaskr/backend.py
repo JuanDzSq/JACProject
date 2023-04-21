@@ -129,12 +129,11 @@ class Backend:
         sender_email = "teamjactechx@gmail.com"
         receiver_emails = ["christin_m@techexchange.in", email]
         message = f"""\
-        Subject: User submitted "Contact Support Form"
+        Subject: {name} submmitted a Contact Support Form!
 
-        New concern from Users.
+        New concern from {name}.
         
         """
-
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(sender_email, password)
             return server.sendmail(sender_email, receiver_emails, message)
