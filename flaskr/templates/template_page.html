@@ -1,67 +1,107 @@
 {% extends 'navigation_bar.html' %}
-{% block voting %}
+{% block content %}
 <!DOCTYPE html>
 <html>
-    <style>
-        body{
-            min-height: 100vh;
-            align-items: right;
-            display: flex;
-            justify-content: center;
-            background: transparent;
-        }
-        .container{
-            border: 2px transparent;
-            padding: 10px;
-            width: 100px;
-            text-align: center;
-            border-radius: 4px;
-            position: relative;
-        }
-        h2{
-            color: #fff;
-            padding: 20px 0;
-            font-size: 20px;
-        }
-        .voting{
-            position: relative;
-            border: 3px transparent;
-            border-radius: 2px;
-            display: flex;
-            justify-content: center;
-        }
-
-        button{
-            color:#fff;
-            background: none;
-            border: none;
-            font-size: 20px;
-            padding: 0 15px;
-            margin: 10 0px;
-        }
-    </style>
+<head>
+    <title>Voting Section</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudFlare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head> 
 <body>
     <div class="container">
         <h2>Voting Section</h2>
         <div class="voting">
             <button id="up_vote">
-                <i class="fa-regular fa-up"></i>
+                <i class="fa fa-thumbs-up"></i>
             </button>
             <input type="number" id="input_up" value="0" name="">
 
             <button id="down_vote">
-                <i class="fa-regular fa-down"></i>
+                <i class="fa fa-thumbs-down"></i>
             </button>
             <input type="number" id="input_down" value="0" name="">
         </div>
     </div>
+    <script type="text/javascript">
+        let up_vote = document.querySelector('#up_vote');
+        let down_vote = docutment.querySelector('#down_vote');
 
-</body>
+        let input_up = document.querySelector('#input_up')
+        let input_down = document.querySelector('#input_down')
 
+        up_vote.addEventListener('click', ()=>{
+            input_up.value = parseInt(input_up.value) + 1;
+            input_up.style.color = "#12ff00";
+        })
+
+        down_vote.addEventListener('click', ()=>{
+            input_down.value = parseInt(input_down.value) + 1;
+            input_down.style.color = "#12ff00";
+        })
+
+    </script>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        outline: none;
+    }
+    body{
+        min-height: 100vh;
+        display: flex;
+        align-items: left;
+        justify-content: center;
+        background: rgb(191, 229, 253) ;
+    }
+    .container{
+        border: 3px solid #303030;
+        padding: 10px;
+        width: 350px;
+        height: 100px;
+        text-align: center;
+        border-radius: 4px;
+        position: relative;
+    }
+    h2{
+        color: rgb(11, 11, 11);
+        padding: 20px 0;
+        font-size: 20px;
+    }
+    .voting{
+        position: relative;
+        border: 3px solid #303030;
+        border-radius: 4px;
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+    }
+    input{
+        width: 50px;
+        border: none;
+        background: none;
+        color:rgb(7, 7, 7);
+        font-size: 15px;
+        margin: 0 10px;
+        pointer-events: none;
+    }
+    button{
+        color:rgb(7, 7, 7);
+        background: none;
+        border: none;
+        font-size: 15px;
+        padding: 0 15px;
+        margin: 10 0px;
+        margin-left: 20px;
+        cursor: pointer;
+    }
+    button:active{
+        color: #004eff;
+        transform: scale(1.2);
+    }
+
+</style>
 </html>
-{% endblock %}
-
-{% block content %}
 {{ content_str }}
 {% endblock %}
 
