@@ -92,7 +92,7 @@ class Backend:
             return comments
         else:
             return []
-    
+
     def get_votes(self, page_name):
         """Gives the votes corresponding to the given wiki page.
         
@@ -112,7 +112,7 @@ class Backend:
         if not blob.exists():
             page_vote_text = f"{page_name}, 0, 0"
             blob.upload_from_string(page_vote_text)
-            return (0,0)
+            return (0, 0)
         page_votes_str = blob.download_as_text()
         page_votes_list = page_votes_str.split(end_of_vote_message)
 
@@ -122,11 +122,11 @@ class Backend:
                 up = votes[1]
                 down = votes[2]
                 return (up, down)
-            
+
         page_votes_list.append(f"{page_name}, 0, 0")
         page_vote_text = end_of_vote_message.join(page_votes_list)
         blob.upload_from_string(page_vote_text)
-        return (0,0)
+        return (0, 0)
 
     def upload(self, file_content, file_name):
         """

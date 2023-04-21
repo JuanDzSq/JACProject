@@ -115,13 +115,14 @@ def make_endpoints(app):
                 comment_text = session.pop("comment_text")
             else:
                 comment_text = ""
-            
-            page_up_votes, page_down_votes = backend.get_votes(name.split("."[0]))
+
+            page_up_votes, page_down_votes = backend.get_votes(
+                name.split("."[0]))
             return render_template("template_page.html",
                                    content_str=content_str,
                                    comments=comments,
-                                   comment_text=comment_text, 
-                                   page_up_votes=page_up_votes, 
+                                   comment_text=comment_text,
+                                   page_up_votes=page_up_votes,
                                    page_down_votes=page_down_votes)
 
     """
