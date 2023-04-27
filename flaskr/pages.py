@@ -137,7 +137,7 @@ def make_endpoints(app):
             page_name = name.split(".")[0]
             backend.upload_user_vote(username, page_name, 1)
             return redirect(url_for('get_pages', name=name))
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
 
     @app.route("/pages/<name>/down")
     def downvote(name):
@@ -147,7 +147,7 @@ def make_endpoints(app):
             page_name = name.split(".")[0]
             backend.upload_user_vote(username, page_name, 0)
             return redirect(url_for('get_pages', name=name))
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
 
     """
     The about route will retrieve the images from the given authors and retrieve it through the backend. 
