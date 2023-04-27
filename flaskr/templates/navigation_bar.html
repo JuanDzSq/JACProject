@@ -8,7 +8,8 @@
             ('pages', 'Pages'),
             ('about', 'About'),
             ('upload', 'Upload'),
-            ('logout', 'Logout')]: %}
+            ('logout', 'Logout'),
+            ('contact_support', 'Contact_Support_Form')]: %}
                 <a href={{ url_for(href) }}>{{ caption }}</a>
             {% endfor %}
             {{ session['username'] }}
@@ -17,7 +18,8 @@
             ('pages', 'Pages'),
             ('about', 'About'),
             ('login', 'Login'),
-            ('sign_up', 'Sign Up')]: %}
+            ('sign_up', 'Sign Up'),
+            ('contact_support', 'Contact_Support_Form')]: %}
                 <a href={{ url_for(href) }}>{{ caption }}</a>
             {% endfor %}
         {% endif %}

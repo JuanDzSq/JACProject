@@ -289,3 +289,32 @@ def test_get_image_non_existent(backend):
     result = backend.get_image(image_name)
     assert isinstance(result, str)
     assert result == f"The image {image_name} does not exist in the bucket."
+
+
+# def test_send_email_successful(backend):
+#     mock_existing_user = "c_m"
+#     mock_email = "christin_m@techexchange.in"
+#     mock_comment = "This is a test :D"
+
+#     result = backend.send_email(mock_exisiting_user, mock_email, mock_comment)
+#     assert result
+
+# def test_upload_new_user_email(backend):
+#     mock_user_email = "fake_email@fake.email.com"
+#     mock_username = "fake name"
+
+#     mock_blob_user = MagicMock()
+#     mock_blob_user.exists.return_value = False
+
+#     backend.user_bucket.blob.return_value = mock_blob_user
+#     result = backend.user_email(mock_username, mock_user_email)
+
+# def test_upload_user_email(backend):
+#     mock_user_email = "christin_m@techexchange.in"
+#     mock_username = "c_m"
+
+#     mock_blob_user = MagicMock()
+#     mock_blob_user.exists.return_value = True
+
+#     backend.user_bucket.blob.return_value = mock_blob_user
+#     result = backend.user_email(mock_username, mock_user_email)
