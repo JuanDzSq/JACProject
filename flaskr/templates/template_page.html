@@ -61,14 +61,14 @@
 <body>
     <div class="voting-section-container" style="border: 2px solid #ccc; padding: 10px; padding-bottom: 30px; padding-top: 1px; margin-left: 5px; margin-right:1800px; margin-top: 20px;">
         <h2>React!</h2>
-        <form method="post">
+        <form action="{{url_for('get_pages', name=page_name)}}" method="post">
             <span class="box" id="initial_space"></span>
-            <button id="up_vote">
+            <button name="up_vote" id="up-vote" type="button" {% if cur_user_vote == 1 %} style="background-color: lightblue;" {% endif %} onclick="window.location.href='{{url_for('upvote', name=name)}}'">
                 <i class="fas fa-arrow-alt-circle-up"></i>
             </button>
             <span class="box">{{ page_up_votes }}</span>
-            
-            <button id="down_vote">
+
+            <button name="down_vote" id="down_vote" type="button" {% if cur_user_vote == 0 %} style="background-color: lightblue;" {% endif %} onclick="window.location.href='{{url_for('downvote', name=name)}}'">
                 <i class="fas fa-arrow-alt-circle-down"></i>
             </button>
             <span class="box">{{ page_down_votes }}</span>

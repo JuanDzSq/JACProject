@@ -92,39 +92,186 @@ class Backend:
         else:
             return []
 
-    def get_votes(self, page_name):
+    def upload_user_vote(self, username: str, page_name: str, vote: int):
+        blob = self.content_bucket.blob("user_votes_file.txt")
+
+        users_separator = "-/-User-/-"
+        user_and_votes_separator = "<-User / Page Votes->"
+        dictionary_separator = "-/-Dict-/-"
+        key_value_separator = "<-Key / Value->"
+        prev_vote = -1  # -1 means that the user hasn't made a vote, which is the default case.
+
+        if blob.exists():
+            users_vote_str = blob.download_as_text()
+            users_list = users_vote_str.split(
+                users_separator)  # Makes list of users
+            for i in range(len(users_list)):
+                users_list[i] = users_list[i].split(
+                    user_and_votes_separator
+                )  # Makes lists of [username, all page votes]
+
+            user_found = False  # A flag for whether a user is found or not
+            for i in range(len(users_list)):
+                if users_list[i][
+                        0] == username:  # True if user is found within users_vote_str
+                    user_found = True
+                    users_list[i][1] = users_list[i][1].split(
+                        dictionary_separator
+                    )  # Make a list of [page vote 1, page vote 2, etc.]
+                    page_found = False  # A flag for whether a page is found or not
+                    for j in range(len(users_list[i][1])):
+                        users_list[i][1][j] = users_list[i][1][j].split(
+                            key_value_separator
+                        )  # Makes lists of [page_name, vote]
+                        if users_list[i][1][j][
+                                0] == page_name:  # True if page_name is in the user's page votes string
+                            page_found = True
+                            prev_vote = int(
+                                users_list[i][1][j]
+                                [1])  # Gets the original vote of the user
+                            if vote == prev_vote:  # If the user reclicks their previous vote, then their vote is canceled and set to 1
+                                users_list[i][1][j][1] = str(-1)
+                            else:
+                                users_list[i][1][j][1] = str(vote)
+                    if not page_found:
+                        users_list[i][1].append([page_name, str(vote)])
+
+                    for j in range(len(users_list[i][1])):
+                        users_list[i][1][j] = key_value_separator.join(
+                            users_list[i][1][j])
+                    users_list[i][1] = dictionary_separator.join(
+                        users_list[i][1])
+
+            if not user_found:
+                users_list.append(
+                    [username, page_name + "<-Key / Value->" + str(vote)])
+            for i in range(len(users_list)):
+                users_list[i] = user_and_votes_separator.join(users_list[i])
+            users_vote_str = users_separator.join(users_list)
+        else:
+            users_vote_str = username + "<-User / Page Votes->" + page_name + "<-Key / Value->" + str(
+                vote)
+        self.upload_page_votes(page_name, vote, prev_vote)
+        blob.upload_from_string(users_vote_str)
+
+    def get_user_vote(self, username, page_name) -> int:
+        blob = self.content_bucket.blob("user_votes_file.txt")
+
+        users_separator = "-/-User-/-"
+        user_and_votes_separator = "<-User / Page Votes->"
+        dictionary_separator = "-/-Dict-/-"
+        key_value_separator = "<-Key / Value->"
+
+        if blob.exists():
+            users_vote_str = blob.download_as_text()
+            users_list = users_vote_str.split(
+                users_separator)  # Makes list of users
+            for i in range(len(users_list)):
+                users_list[i] = users_list[i].split(
+                    user_and_votes_separator
+                )  # Makes lists of [username, all page votes]
+
+            for i in range(len(users_list)):
+                if users_list[i][
+                        0] == username:  # True if user is found within users_vote_str
+                    users_list[i][1] = users_list[i][1].split(
+                        dictionary_separator
+                    )  # Make a list of [page vote 1, page vote 2, etc.]
+                    for j in range(len(users_list[i][1])):
+                        users_list[i][1][j] = users_list[i][1][j].split(
+                            key_value_separator
+                        )  # Makes lists of [page_name, vote]
+                        if users_list[i][1][j][
+                                0] == page_name:  # True if page_name is in the user's page votes string
+                            return int(users_list[i][1][j][1])
+        return -1  # Return -1 if the user is not found, or if the page is not found
+
+    def vote_result(self, vote: int, prev_vote: int) -> tuple:
+        if vote == prev_vote and vote == 0:
+            return (0, -1)  # Cancel downvote
+        elif vote == prev_vote and vote == 1:
+            return (-1, 0)  # Cancel upvote
+        elif vote == 1 and prev_vote == 0:
+            return (1, -1)  # Switch vote from downvote to upvote
+        elif vote == 0 and prev_vote == 1:
+            return (-1, 1)  # Switch vote from upvote to downvote
+        elif vote == 0:
+            return (0, 1)
+        else:
+            return (1, 0)
+
+    def upload_page_votes(self, page_name, vote: int, prev_vote: int):
+        blob = self.content_bucket.blob("page_votes_file.txt")
+
+        pages_separator = "-/-Page-/-"
+        page_votes_separator = "<-Page / Page Votes->"
+        votes_separator = "<-Up / Down->"
+        if blob.exists():
+            pages_votes_str = blob.download_as_text()
+            pages_list = pages_votes_str.split(pages_separator)
+            for i in range(len(pages_list)):
+                pages_list[i] = pages_list[i].split(page_votes_separator)
+
+            page_found = False
+            for i in range(len(pages_list)):
+                if pages_list[i][0] == page_name:
+                    page_found = True
+                    pages_list[i][1] = pages_list[i][1].split(votes_separator)
+                    old_upvote = int(pages_list[i][1][0])
+                    old_downvote = int(pages_list[i][1][1])
+                    upvote, downvote = self.vote_result(vote, prev_vote)
+                    new_upvote = old_upvote + upvote
+                    new_downvote = old_downvote + downvote
+                    pages_list[i][1][0] = str(new_upvote)
+                    pages_list[i][1][1] = str(new_downvote)
+                    pages_list[i][1] = votes_separator.join(pages_list[i][1])
+
+            if not page_found:
+                if vote == 0:
+                    pages_list.append([page_name, "0<-Up / Down->1"])
+                else:
+                    pages_list.append([page_name, "1<-Up / Down->0"])
+            for i in range(len(pages_list)):
+                pages_list[i] = page_votes_separator.join(pages_list[i])
+            pages_votes_str = pages_separator.join(pages_list)
+        else:
+            if vote == 0:
+                pages_votes_str = page_name + "<-Page / Page Votes->0<-Up / Down->1"
+            else:
+                pages_votes_str = page_name + "<-Page / Page Votes->1<-Up / Down->0"
+        blob.upload_from_string(pages_votes_str)
+
+    def get_page_votes(self, page_name) -> tuple:
         """Gives the votes corresponding to the given wiki page.
         
         If the page's votes are already in the content bucket, it retrieves its
-        votes. If the page is not in the bucket, then it gets added into the bucket
-        with zero votes.
+        votes. If the page is not in the bucket, then it returns zero votes.
 
         Args:
         - page_name (str): The name of the wiki page to retrieve comments for.
 
-         Returns:
-         A tuple with format (up_vote, down_vote), representing the votes of the 
-         given wiki page.
+        Returns: 
+        A tuple with format (up_vote, down_vote), representing the votes of the 
+        given wiki page.
         """
-        end_of_vote_message = "---"
-        blob = self.content_bucket.blob("vote_text_file.txt")
-        if not blob.exists():
-            page_vote_text = f"{page_name}, 0, 0"
-            blob.upload_from_string(page_vote_text)
-            return (0, 0)
-        page_votes_str = blob.download_as_text()
-        page_votes_list = page_votes_str.split(end_of_vote_message)
+        blob = self.content_bucket.blob("page_votes_file.txt")
 
-        for page_votes in page_votes_list:
-            votes = page_votes.split(",")
-            if votes[0] == page_name:
-                up = votes[1]
-                down = votes[2]
-                return (up, down)
+        pages_separator = "-/-Page-/-"
+        page_votes_separator = "<-Page / Page Votes->"
+        votes_separator = "<-Up / Down->"
 
-        page_votes_list.append(f"{page_name}, 0, 0")
-        page_vote_text = end_of_vote_message.join(page_votes_list)
-        blob.upload_from_string(page_vote_text)
+        if blob.exists():
+            pages_votes_str = blob.download_as_text()
+            pages_list = pages_votes_str.split(pages_separator)
+            for i in range(len(pages_list)):
+                pages_list[i] = pages_list[i].split(page_votes_separator)
+
+            for i in range(len(pages_list)):
+                if pages_list[i][0] == page_name:
+                    pages_list[i][1] = pages_list[i][1].split(votes_separator)
+                    cur_upvote = int(pages_list[i][1][0])
+                    cur_downvote = int(pages_list[i][1][1])
+                    return (cur_upvote, cur_downvote)
         return (0, 0)
 
     def upload(self, file_content, file_name):
