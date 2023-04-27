@@ -70,7 +70,7 @@ def test_working_get_pages(client, backend):
 
 # def test_non_empty_user_comment_when_logged_in(client, backend):
 #     """
-#     Test that user can make comment when logged in. Tests that the backend method is called which uploads the comments in the buckets and the page is redirected again. 
+#     Test that user can make comment when logged in. Tests that the backend method is called which uploads the comments in the buckets and the page is redirected again.
 #     """
 #     page_name = "page1"
 #     comment = "Hey! This is just a test comment"
@@ -93,7 +93,6 @@ def test_working_get_pages(client, backend):
 #     resp = client.get(f'/pages/{page_name}')
 #     assert resp.status_code == 200
 #     assert b"submit" in resp.data
-
 
 # def test_empty_user_comment_when_logged_in(client, backend):
 #     """
