@@ -51,11 +51,11 @@ def make_endpoints(app):
             comment = request.form['comment']
             email_results = backend.send_email(name, email, comment)
             return redirect(url_for('home'))
-            
 
         if 'username' in session:
             username = session['username']
-            return render_template("Contact_Support_Form.html", username=username)
+            return render_template("Contact_Support_Form.html",
+                                   username=username)
 
         return render_template("Contact_Support_Form.html")
 

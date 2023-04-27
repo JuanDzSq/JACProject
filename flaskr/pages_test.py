@@ -217,7 +217,6 @@ Testing if authors images show
 #     author = {'Christin': 'Christin.jpeg'}
 #     response = self.post("/about", data = author)
 #     self.assertEqual(response.status_code)
-
 """
 Testing if client can access the Contact Support Form 
 """
@@ -230,7 +229,7 @@ Testing if client can access the Contact Support Form
 #     with client.session_trasaction() as session:
 #         session['loggedin'] = True
 #         session['username'] = username
-    
+
 #     backend_instance = backend.return_value
 #     backend_instance.contact_supoort = MagicMock()
 
@@ -244,7 +243,7 @@ Testing if client can access the Contact Support Form
 #     with client.session_trasaction() as session:
 #         session['loggedin'] = False
 #         session['username'] = username
-    
+
 #     backend_instance = backend.return_value
 #     backend_instance.contact_supoort = MagicMock()
 
@@ -255,4 +254,3 @@ Testing if client can access the Contact Support Form
 #     response_full_name = client.post(f"/contact_support", data={"Name": full_name})
 #     expected_full_name = client.post(f"/contact_support", data={"Name": fulle_name})
 #     assert response_full_name.data == expected_full_name.data
-

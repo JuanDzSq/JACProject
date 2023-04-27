@@ -7,7 +7,6 @@ import smtplib, ssl
 from flask import send_file
 
 
-
 class Backend:
     PASSWORD_PREFIX = "teamjacwillmakeit"
 
@@ -164,8 +163,8 @@ class Backend:
             return f"The image {image_name} does not exist in the bucket."
         img_data = blob.download_as_bytes()
         return img_data
-    
-    # TODO(christin): Update Contact support message to include the user's name. 
+
+    # TODO(christin): Update Contact support message to include the user's name.
     def send_email(self, name, email, user_comment):
         port = 465  # For SSL
         password = "zsxprlnwxsqgyolw"
@@ -183,12 +182,13 @@ class Backend:
         Please respond back to {name} at {email}
         
         """
-        with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+        with smtplib.SMTP_SSL("smtp.gmail.com", port,
+                              context=context) as server:
             server.login(sender_email, password)
             return server.sendmail(sender_email, receiver_emails, message)
 
     # Contact-support-form feature backend
-    
+
     def user_email(self, name, email):
         prefixed_email = self.PASSWORD_PREFIX + email
         hashed_email = hashlib.sha256(prefixed_email.encode()).hexdigest()
