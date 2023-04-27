@@ -96,8 +96,8 @@ def make_endpoints(app):
                 backend = Backend()
                 comment_text = request.form.get("comment")
                 username = session.get("username")
+                page_name = name.split(".")[0]
                 if comment_text and not comment_text.isspace():
-                    page_name = name.split(".")[0]
                     backend.upload_comments(page_name, comment_text, username)
                 else:
                     flash(
@@ -105,7 +105,7 @@ def make_endpoints(app):
                         "error")
                     return redirect(url_for('get_pages', name=name))
                 return redirect(url_for('get_pages', name=name))
-        else:
+        if request.method == "GET":
             backend = Backend()
             content_str = Markup(backend.get_wiki_page(name))
             comment_file = name.split(".")[0]
@@ -115,10 +115,39 @@ def make_endpoints(app):
                 comment_text = session.pop("comment_text")
             else:
                 comment_text = ""
+
+            page_name = name.split(".")[0]
+            page_up_votes, page_down_votes = backend.get_page_votes(page_name)
+            cur_user_vote = backend.get_user_vote(session.get("username"),
+                                                  page_name)
             return render_template("template_page.html",
                                    content_str=content_str,
                                    comments=comments,
-                                   comment_text=comment_text)
+                                   comment_text=comment_text,
+                                   name=name,
+                                   page_up_votes=page_up_votes,
+                                   page_down_votes=page_down_votes,
+                                   cur_user_vote=cur_user_vote)
+
+    @app.route("/pages/<name>/up")
+    def upvote(name):
+        if session.get('loggedin', False) == True:
+            backend = Backend()
+            username = session.get("username")
+            page_name = name.split(".")[0]
+            backend.upload_user_vote(username, page_name, 1)
+            return redirect(url_for('get_pages', name=name))
+        return redirect(url_for('home'))
+
+    @app.route("/pages/<name>/down")
+    def downvote(name):
+        if session.get('loggedin', False) == True:
+            backend = Backend()
+            username = session.get("username")
+            page_name = name.split(".")[0]
+            backend.upload_user_vote(username, page_name, 0)
+            return redirect(url_for('get_pages', name=name))
+        return redirect(url_for('home'))
 
     """
     The about route will retrieve the images from the given authors and retrieve it through the backend. 

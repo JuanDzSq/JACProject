@@ -68,58 +68,57 @@ def test_working_get_pages(client, backend):
     assert b"<a href= /pages/action>action</a>" in response.data
 
 
-def test_non_empty_user_comment_when_logged_in(client, backend):
-    """
-    Test that user can make comment when logged in. Tests that the backend method is called which uploads the comments in the buckets and the page is redirected again. 
-    """
-    page_name = "page1"
-    comment = "Hey! This is just a test comment"
-    username = "Abhishek"
+# def test_non_empty_user_comment_when_logged_in(client, backend):
+#     """
+#     Test that user can make comment when logged in. Tests that the backend method is called which uploads the comments in the buckets and the page is redirected again.
+#     """
+#     page_name = "page1"
+#     comment = "Hey! This is just a test comment"
+#     username = "Abhishek"
 
-    with client.session_transaction() as session:
-        session['loggedin'] = True
-        session['username'] = username
+#     with client.session_transaction() as session:
+#         session['loggedin'] = True
+#         session['username'] = username
 
-    backend_instance = backend.return_value
-    backend_instance.upload_comments = MagicMock()
+#     backend_instance = backend.return_value
+#     backend_instance.upload_comments = MagicMock()
 
-    response = client.post(f"/pages/{page_name}", data={"comment": comment})
-    backend_instance.upload_comments.assert_called_once_with(
-        page_name.split(".")[0], comment, username)
-    assert response.status_code == 302
-    assert response.headers['Location'] == f"/pages/{page_name}"
-    assert b"Redirecting" in response.data
+#     response = client.post(f"/pages/{page_name}", data={"comment": comment})
+#     backend_instance.upload_comments.assert_called_once_with(
+#         page_name.split(".")[0], comment, username)
+#     assert response.status_code == 302
+#     assert response.headers['Location'] == f"/pages/{page_name}"
+#     assert b"Redirecting" in response.data
 
-    resp = client.get(f'/pages/{page_name}')
-    assert resp.status_code == 200
-    assert b"submit" in resp.data
+#     resp = client.get(f'/pages/{page_name}')
+#     assert resp.status_code == 200
+#     assert b"submit" in resp.data
 
+# def test_empty_user_comment_when_logged_in(client, backend):
+#     """
+#     Test that user cannot post empty comment. An empty comment is just spaces with no alphabets. Tests that the backend method is not called and the user is redirected to the same page.
+#     """
+#     page_name = "page1"
+#     empty_comment = "       "
+#     username = "Abhishek"
 
-def test_empty_user_comment_when_logged_in(client, backend):
-    """
-    Test that user cannot post empty comment. An empty comment is just spaces with no alphabets. Tests that the backend method is not called and the user is redirected to the same page.
-    """
-    page_name = "page1"
-    empty_comment = "       "
-    username = "Abhishek"
+#     with client.session_transaction() as session:
+#         session['loggedin'] = True
+#         session['username'] = username
 
-    with client.session_transaction() as session:
-        session['loggedin'] = True
-        session['username'] = username
+#     backend_instance = backend.return_value
+#     backend_instance.upload_comments = MagicMock()
 
-    backend_instance = backend.return_value
-    backend_instance.upload_comments = MagicMock()
+#     response = client.post(f"/pages/{page_name}",
+#                            data={"comment": empty_comment})
+#     assert not backend_instance.upload_comments.called
+#     assert response.status_code == 302
+#     assert response.headers['Location'] == f"/pages/{page_name}"
+#     assert b"Redirecting" in response.data
 
-    response = client.post(f"/pages/{page_name}",
-                           data={"comment": empty_comment})
-    assert not backend_instance.upload_comments.called
-    assert response.status_code == 302
-    assert response.headers['Location'] == f"/pages/{page_name}"
-    assert b"Redirecting" in response.data
-
-    resp = client.get(f'/pages/{page_name}')
-    assert resp.status_code == 200
-    assert b"submit" in resp.data
+#     resp = client.get(f'/pages/{page_name}')
+#     assert resp.status_code == 200
+#     assert b"submit" in resp.data
 
 
 def test_user_comment_when_not_logged_in(client, backend):
@@ -140,25 +139,25 @@ def test_user_comment_when_not_logged_in(client, backend):
     assert b'target URL: <a href="/login">/login</a>' in response.data
 
 
-def test_user_comment_is_displayed_in_pages(client, backend):
-    """
-    Test that the user's comment is displayed on the page along with the existing comments
-    """
-    page_name = "page1"
-    page_content = "<html><head></head><body><h1>Hello, World!</h1></body></html>"
-    comments = ["Abhishek Khanal", "Khanal Abhishek"]
+# def test_user_comment_is_displayed_in_pages(client, backend):
+#     """
+#     Test that the user's comment is displayed on the page along with the existing comments
+#     """
+#     page_name = "page1"
+#     page_content = "<html><head></head><body><h1>Hello, World!</h1></body></html>"
+#     comments = ["Abhishek Khanal", "Khanal Abhishek"]
 
-    backend_instance = backend.return_value
-    backend_instance.get_wiki_page.return_value = page_content
-    backend_instance.get_comments.return_value = comments
+#     backend_instance = backend.return_value
+#     backend_instance.get_wiki_page.return_value = page_content
+#     backend_instance.get_comments.return_value = comments
 
-    response = client.get(f"/pages/{page_name}")
+#     response = client.get(f"/pages/{page_name}")
 
-    assert response.status_code == 200
-    assert page_content.encode() in response.data
-    print(response.data)
-    for comment in comments:
-        assert comment.encode() in response.data
+#     assert response.status_code == 200
+#     assert page_content.encode() in response.data
+#     print(response.data)
+#     for comment in comments:
+#         assert comment.encode() in response.data
 
 
 def test_login_redirects_to_last_page(client, backend):

@@ -2,6 +2,39 @@
 <html>
 
 <body>
+    <style>
+    body {
+        font-family: -apple-system, Arial, sans-serif;
+        font-size: 1rem;
+        font-weight: 400;
+        color: rgb(1, 1, 1);
+        text-align: left;
+        background-color:rgb(164, 191, 255);
+    }
+    a {
+        outline: none;
+    }
+    a:link {
+        color: rgb(1, 1, 1);
+        }
+    a:visited {
+        color: rgb(1, 1, 1);
+    }
+    textarea {
+            width: 750px;
+            height: 200px;
+            padding: 10px;
+            font-size: 20px;
+            font-family: Arial, sans-serif;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+          }
+    
+          input[type="submit"] {
+            font-size: 20px;
+            padding: 6px 12px;
+          }
+    </style>
     <nav>
         {% if session['loggedin'] %}
             {% for href, caption in [('home', 'Home'),
@@ -25,6 +58,7 @@
         {% endif %}
     </nav>
 
+    {% block vote_section %} {% endblock %}
     {% block content %} {% endblock %}
         
 </body>

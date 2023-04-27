@@ -1,67 +1,59 @@
 {% extends 'navigation_bar.html' %}
-{% block voting %}
 <!DOCTYPE html>
 <html>
-    <style>
-        body{
-            min-height: 100vh;
-            align-items: right;
-            display: flex;
-            justify-content: center;
-            background: transparent;
-        }
-        .container{
-            border: 2px transparent;
-            padding: 10px;
-            width: 100px;
-            text-align: center;
-            border-radius: 4px;
-            position: relative;
-        }
-        h2{
-            color: #fff;
-            padding: 20px 0;
-            font-size: 20px;
-        }
-        .voting{
-            position: relative;
-            border: 3px transparent;
-            border-radius: 2px;
-            display: flex;
-            justify-content: center;
-        }
-
-        button{
-            color:#fff;
-            background: none;
-            border: none;
-            font-size: 20px;
-            padding: 0 15px;
-            margin: 10 0px;
-        }
-    </style>
+{% block vote_section %}
+<script src="https://kit.fontawesome.com/767ced5a28.js" crossorigin="anonymous"></script>
+<style>
+    .box {
+        display: inline-block;
+        width: 40px;
+        height: 10px;
+        background: transparent;
+        color: black;
+    }  
+    #initial_space {
+        display: inline-block;
+        width: 25px;
+        height: 10px;
+        background: transparent;
+        color: black;
+    }  
+</style>
 <body>
-    <div class="container">
-        <h2>Voting Section</h2>
-        <div class="voting">
-            <button id="up_vote">
-                <i class="fa-regular fa-up"></i>
+    <div class="voting-section-container" style="border: 2px solid rgb(241, 236, 236); padding: 10px; padding-bottom: 30px; padding-top: 1px; margin-left: 5px; margin-right:1800px; margin-top: 20px;">
+        <h2>React!</h2>
+        <form action="{{url_for('get_pages', name=page_name)}}" method="post">
+            <span class="box" id="initial_space"></span>
+            <button name="up_vote" id="up-vote" type="button" {% if cur_user_vote == 1 %} style="background-color: rgb(237, 214, 214);" {% endif %} onclick="window.location.href='{{url_for('upvote', name=name)}}'">
+                <i class="fas fa-arrow-alt-circle-up"></i>
             </button>
-            <input type="number" id="input_up" value="0" name="">
+            <span class="box">{{ page_up_votes }}</span>
 
-            <button id="down_vote">
-                <i class="fa-regular fa-down"></i>
+            <button name="down_vote" id="down_vote" type="button" {% if cur_user_vote == 0 %} style="background-color: rgb(237, 214, 214);" {% endif %} onclick="window.location.href='{{url_for('downvote', name=name)}}'">
+                <i class="fas fa-arrow-alt-circle-down"></i>
             </button>
-            <input type="number" id="input_down" value="0" name="">
-        </div>
+            <span class="box">{{ page_down_votes }}</span>
+        </form>
     </div>
 
 </body>
-
-</html>
 {% endblock %}
 
 {% block content %}
+<style>
+        body{
+            min-height: 100vh;
+            align-items: right;
+            justify-content: center;
+            background: rgb(164, 191, 255);
+        }
+        h2{
+            color: rgb(0, 0, 0);
+            padding: 20px 0;
+            font-size: 30px;
+        }
+</style>
+<br>
 {{ content_str }}
 <br>
 <br>
@@ -69,45 +61,42 @@
 
 <div class="comments-section">
 
+    <div class="comment-section-container" style="border: 2px solid rgb(241, 236, 236); padding: 10px; margin-left: 210px; margin-right:210px;">
+        <form method="post">
+            <div>
+                <label for="comment">Add a Comment:</label>
+                <textarea id="comment" name="comment">{{comment_text}}</textarea>
+            </div>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {{messages[0]}}
+                </ul>
+            {% endif %}
+            {% endwith %}
+            <input type="submit" value="Submit">
+        </form>
 
-    <div class="comment-section-container" style="border: 2px solid #ccc; padding: 10px; margin-left: 210px; margin-right:210px;">
-    <h2 style="color:blue; text-align:center; background-color: #dac5c5; padding: 10px; font-family: Century Gothic, sans-serif; margin-left: 75px; margin-right:75px;">Comments</h2>
-    {% if comments %}
-    {% for comment in comments %}
-    {% set index = comment.find(':') %}
+        <h2 style="color:rgb(85, 85, 245); text-align:center; background-color: rgb(241, 236, 236); padding: 10px; font-family: Century Gothic, sans-serif; margin-left: 75px; margin-right:75px;">Comments</h2>
+        
+        {% if comments %}
+        {% for comment in comments %}
+        {% set index = comment.find(':') %}
+            <div class="comment" style="padding: 3px; margin-left: 100px; border: 1px solid rgb(241, 236, 236); margin-right:100px; background-color: rgb(237, 214, 214); margin-bottom: 5px;">
 
-    <div class="comment" style="padding: 3px; margin-left: 100px; border: 1px solid #ccc; margin-right:100px; background-color: #eddddd1b; margin-bottom: 5px;">
-
-        <p style="font-size: 20px; color: rgb(107, 104, 212); font-family: Roboto, sans-serif; margin-left: 10px;">
-            <strong>{{ comment[:index] }}</strong> 
-        </p>
-    
-        <pre style="font-size: 14px; color: rgb(0, 0, 0); font-family: Roboto, sans-serif; margin-left: 75px; margin-right: 150px; margin-bottom: 20px; padding: 5px; border: 1px solid rgb(221, 215, 215); white-space: pre-wrap;">{{ comment[index+1:] }}</pre>
-    
-    </div>
-
-    {% endfor %}
-    {% else %}
-    <p style="font-size: 16px; color: rgb(107, 104, 212); font-family: Roboto, sans-serif; font-style: italic;margin-left: 10px;">No comments added so far, be the first to add a comment.</p>
-    {% endif %}
-    </div>
-    <br>
-    <br>
-
-    <form method="post">
-        <div>
-            <label for="comment">Add a Comment:</label>
-            <textarea id="comment" name="comment">{{comment_text}}</textarea>
-        </div>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-                {{messages[0]}}
-            </ul>
+                <p style="font-size: 20px; color: rgb(107, 104, 212); font-family: Roboto, sans-serif; margin-left: 10px;">
+                    <strong>{{ comment[:index] }}</strong> 
+                </p>
+            
+                <pre style="font-size: 14px; color: rgb(0, 0, 0); font-family: Roboto, sans-serif; margin-left: 75px; margin-right: 150px; margin-bottom: 20px; padding: 5px; border: 1px solid rgb(237, 214, 214); white-space: pre-wrap;">{{ comment[index+1:] }}</pre>
+            
+            </div>
+        {% endfor %}
+        {% else %}
+            <p style="font-size: 16px; color: rgb(55, 50, 50); font-family: Roboto, sans-serif; font-style: italic;margin-left: 10px;">No comments added so far, be the first to add a comment.</p>
         {% endif %}
-        {% endwith %}
-        <input type="submit" value="Submit">
-    </form>
-    
+    </div> 
 </div>
+
 {% endblock %}
+</html>
