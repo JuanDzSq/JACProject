@@ -1,0 +1,82 @@
+{% extends 'navigation_bar.html' %}
+{% block content %}
+<!DOCTYPE html>
+<head>
+    <title>Contact Form</title>
+</head>
+<body>
+    <h3>Contact us</h3>
+    <form id="fcf-form-id" class="fcf-form-class" method="POST" action="{{url_for('contact_support')}}">
+            <label for="Name" class="fcf-label">Your name</label>
+            <div class="fcf-input-group">
+                {% if session['loggedin'] %}
+                    <input type="text" id="Name" name="Name" class="fcf-form-control" required value={{ session['username'] }}>
+                {% else %}
+                    <input type="text" id="Name" name="Name" class="fcf-form-control" required>
+                {% endif %}
+                
+            </div>
+        <div class="fcf-form-group">
+            <label for="Email" class="fcf-label">Your email address</label>
+            <div class="fcf-input-group">
+                <input type="email" id="email" name="Email" class="fcf-form-control" required>
+            </div>
+<!-- place holder until i get Abhishek's comment box to merge with this form -->
+            <!-- <div class="fcf-form-group">
+                <label for="comment" class="fcf-label">Your message</label>
+                <div class="fcf-input-group">
+                    <textarea id="comment" name="comment" class="fcf-form-control" rows="6" maxlength="3000" required ></textarea>
+                </div>
+            </div>
+        <div class="fcf-form-group">
+            <button type="submit" id="fcf-button" class="fcf-btn fcf-btn-primary fcf-btn-lg fcf-btn-block">Send</button>
+        </div>  -->
+<!-- place holder until i get Abhishek's comment box to merge with this form -->
+
+<!-- Copy paste of Abhishek's comment box -->
+            <h3><label for="comment">Comment:</label></h3>
+            <textarea id="comment" name="comment" rows="20" cols="100"></textarea
+            ></br>
+            <input type="submit" value="Submit" />
+        </div>
+    </form>
+</body>
+<style>
+    body {
+    font-family: -apple-system, Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgb(1, 1, 1);
+    text-align: left;
+    background-color:rgb(164, 191, 255);
+}
+textarea {
+        width: 750px;
+        height: 200px;
+        padding: 10px;
+        font-size: 20px;
+        font-family: Arial, sans-serif;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      input[type="submit"] {
+        font-size: 20px;
+        padding: 6px 12px;
+      }
+      h3{
+        color: rgb(81, 1, 17);
+      }
+      label{
+        color: rgb(81, 1, 17);
+      }
+</style>
+</html>
+
+    <!-- <script type="text/javascript">
+        $(function() {
+        $("comment").load("Contact_Us.html");
+        });
+    </script> -->
+
+{% endblock %}

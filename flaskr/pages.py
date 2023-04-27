@@ -40,6 +40,25 @@ def make_endpoints(app):
 
         return render_template("navigation_bar.html")
 
+    #Feature routes
+    @app.route("/contact_support", methods=['GET', 'POST'])
+    def contact_support():
+        backend = Backend()
+        # TODO(christin): Catch exceptions that can be thrown by backend.send_email (specifically SMTPRecipientsRefused) https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.sendmail
+        if request.method == 'POST':
+            name = request.form['Name']
+            email = request.form['Email']
+            comment = request.form['comment']
+            email_results = backend.send_email(name, email, comment)
+            return redirect(url_for('home'))
+
+        if 'username' in session:
+            username = session['username']
+            return render_template("Contact_Support_Form.html",
+                                   username=username)
+
+        return render_template("Contact_Support_Form.html")
+
     """
     The page list will be created with the page names retrieved from the backend. Then the list will be returned 
     to the pages.html and the links will be accessible there

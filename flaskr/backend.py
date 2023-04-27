@@ -3,6 +3,7 @@
 from google.cloud import storage
 import hashlib
 import io
+import smtplib, ssl
 from flask import send_file
 
 
@@ -344,6 +345,42 @@ class Backend:
             return f"The image {image_name} does not exist in the bucket."
         img_data = blob.download_as_bytes()
         return img_data
+
+    # TODO(christin): Update Contact support message to include the user's name.
+    def send_email(self, name, email, user_comment):
+        port = 465  # For SSL
+        password = "zsxprlnwxsqgyolw"
+        context = ssl.create_default_context()
+        sender_email = "teamjactechx@gmail.com"
+        receiver_emails = ["christin_m@techexchange.in", email]
+
+        message = f"""\
+        Subject: {name} submmitted a Contact Support Form!
+
+        New concern from {name} : 
+
+            {user_comment}
+
+        Please respond back to {name} at {email}
+        
+        """
+        with smtplib.SMTP_SSL("smtp.gmail.com", port,
+                              context=context) as server:
+            server.login(sender_email, password)
+            return server.sendmail(sender_email, receiver_emails, message)
+
+    # Contact-support-form feature backend
+
+    def user_email(self, name, email):
+        prefixed_email = self.PASSWORD_PREFIX + email
+        hashed_email = hashlib.sha256(prefixed_email.encode()).hexdigest()
+        user_info = f"{hashed_email}"
+        anonymous_user_info = f"{name}:{hashed_email}"
+        blob = self.user_bucket.blob(name)
+
+        if blob.exists():
+            blob.upload_from_string(user_info)
+        blob.upload_from_string(anonymous_user_info)
 
 
 # example_backend = Backend()
